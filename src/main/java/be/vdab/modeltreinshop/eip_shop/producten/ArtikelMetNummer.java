@@ -1,7 +1,6 @@
 package be.vdab.modeltreinshop.eip_shop.producten;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
