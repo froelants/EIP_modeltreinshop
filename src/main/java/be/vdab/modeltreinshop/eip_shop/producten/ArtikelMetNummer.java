@@ -5,6 +5,8 @@ import be.vdab.modeltreinshop.eip_shop.util.IllegalNullArgumentException;
 
 import java.io.Serial;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class ArtikelMetNummer implements Artikel {
@@ -15,8 +17,10 @@ public class ArtikelMetNummer implements Artikel {
     private String naam;
     private String omschrijving;
     private String merk;
+    private final boolean eenmaligArtikel;
+    private List<String> afbeeldingen;
 
-    public ArtikelMetNummer(long id, String nummer, String merk, String naam, String omschrijving) {
+    public ArtikelMetNummer(long id, String nummer, String merk, String naam, String omschrijving, boolean eenmaligArtikel) {
         List<String> nullParameters = new ArrayList<>();
         if (nummer == null) {
             nullParameters.add("nummer");
@@ -54,6 +58,8 @@ public class ArtikelMetNummer implements Artikel {
                 this.naam = naam.trim();
                 this.omschrijving = omschrijving.trim();
                 this.merk = merk.trim();
+                this.eenmaligArtikel = eenmaligArtikel;
+                this.afbeeldingen = new ArrayList<>();
             }
         }
     }
@@ -76,10 +82,10 @@ public class ArtikelMetNummer implements Artikel {
     @Override
     public void setNaam(String naam) {
         if (naam == null){
-            throw new IllegalArgumentException("Omschrijving mag niet leeg zijn.");
+            throw new IllegalArgumentException("Naam mag niet leeg zijn.");
         }else {
             if(naam.trim().isBlank()){
-                throw new IllegalArgumentException("Omschrijving mag niet null zijn.");
+                throw new IllegalArgumentException("Naam mag niet null zijn.");
             }
             this.naam = naam.trim();
         }
@@ -110,13 +116,52 @@ public class ArtikelMetNummer implements Artikel {
     @Override
     public void setMerk(String merk) {
         if( merk == null){
-            throw new IllegalArgumentException("Omschrijving mag niet leeg zijn.");
+            throw new IllegalArgumentException("Merk mag niet leeg zijn.");
         }else {
             if(merk.trim().isBlank()){
-                throw new IllegalArgumentException("Omschrijving mag niet null zijn.");
+                throw new IllegalArgumentException("Merk mag niet null zijn.");
             }
             this.merk = merk.trim();
         }
+    }
+
+    @Override
+    public final boolean isEenmaligProduct() {
+        return eenmaligArtikel;
+    }
+
+    @Override
+    public final boolean addAfbeelding(String afbeelding) {
+        if( afbeelding == null){
+            throw new IllegalArgumentException("Afbeelding mag niet leeg zijn.");
+        }else {
+            if(afbeelding.trim().isBlank()){
+                throw new IllegalArgumentException("Afbeelding mag niet null zijn.");
+            }
+            return this.afbeeldingen.add(afbeelding.trim());
+        }
+  }
+
+    @Override
+    public final boolean removeAfbeelding(String afbeelding) {
+        if( afbeelding == null){
+            throw new IllegalArgumentException("Afbeelding mag niet leeg zijn.");
+        }else {
+            if(afbeelding.trim().isBlank()){
+                throw new IllegalArgumentException("Afbeelding mag niet null zijn.");
+            }else {
+                if(this.afbeeldingen.contains(afbeelding)){
+                    return this.afbeeldingen.remove(afbeelding);
+                }else {
+                    throw new IllegalArgumentException("Afbeelding bestaat niet in Artikel");
+                }
+            }
+        }
+    }
+
+    @Override
+    public final Collection<String> getAfbeeldingen() {
+        return Collections.unmodifiableList(afbeeldingen);
     }
 
     @Override
@@ -129,14 +174,14 @@ public class ArtikelMetNummer implements Artikel {
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         int result = Long.hashCode(id);
         result = 31 * result + nummer.hashCode();
         return result;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return "ArtikelMetNummer{" +
                "id=" + id +
                ", nummer='" + nummer + '\'' +

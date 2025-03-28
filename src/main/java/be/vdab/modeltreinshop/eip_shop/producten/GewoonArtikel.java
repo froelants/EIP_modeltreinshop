@@ -1,10 +1,11 @@
 package be.vdab.modeltreinshop.eip_shop.producten;
 
-public class ArtikelInVoorraad extends ArtikelDecorator{
+public class GewoonArtikel extends ArtikelDecorator{
 
-    protected ArtikelInVoorraad(Artikel artikel) {
+    protected GewoonArtikel(Artikel artikel) {
         super(artikel);
     }
+
 
 
 

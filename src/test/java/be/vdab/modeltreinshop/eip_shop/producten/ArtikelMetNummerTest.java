@@ -2,6 +2,8 @@ package be.vdab.modeltreinshop.eip_shop.producten;
 
 import be.vdab.modeltreinshop.eip_shop.util.IllegalBlankArgumentException;
 import be.vdab.modeltreinshop.eip_shop.util.IllegalNullArgumentException;
+import jakarta.validation.constraints.AssertFalse;
+import jakarta.validation.constraints.AssertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -16,18 +18,27 @@ class ArtikelMetNummerTest {
     @ParameterizedTest
     @CsvSource({
             // Test combinaties waarbij null-waardes een exception moeten gooien
-            "'123', 'Merk', 'Naam', 'Omschrijving', false",   // Geldig
-            "null, 'Merk', 'Naam', 'Omschrijving', true",     // nummer is null
-            "'123', null, 'Naam', 'Omschrijving', true",      // merk is null
-            "'123', 'Merk', null, 'Omschrijving', true",      // naam is null
-            "'123', 'Merk', 'Naam', null, true",              // omschrijving is null
-            "null, null, null, null, true",                   // alles is null
+            "'123', 'Merk', 'Naam', 'Omschrijving', false, false",   // Geldig
+            "null, 'Merk', 'Naam', 'Omschrijving', false, true",     // nummer is null
+            "'123', null, 'Naam', 'Omschrijving', false, true",      // merk is null
+            "'123', 'Merk', null, 'Omschrijving', false, true",      // naam is null
+            "'123', 'Merk', 'Naam', null, false, true",              // omschrijving is null
+            "null, null, null, null, false, true",                   // alles is null
+            "'123', 'Merk', 'Naam', 'Omschrijving', true, false",   // Geldig
+            "null, 'Merk', 'Naam', 'Omschrijving', true, true",     // nummer is null
+            "'123', null, 'Naam', 'Omschrijving', true, true",      // merk is null
+            "'123', 'Merk', null, 'Omschrijving', true, true",      // naam is null
+            "'123', 'Merk', 'Naam', null, true, true",              // omschrijving is null
+            "null, null, null, null, true, true",                   // alles is null
     })
-    void constructor_ShouldHandleNullValuesCorrectly(String nummer, String merk, String naam, String omschrijving, boolean expectException) {
+    void constructor_ShouldHandleNullValuesCorrectly(String nummer, String merk, String naam, String omschrijving, boolean eenmaligArtikel, boolean expectException) {
         final String finalNummer;
         final String finalMerk;
         final String finalNaam;
         final String finalOmschrijving;
+        final boolean finalEenmaligArtikel;
+
+        finalEenmaligArtikel=eenmaligArtikel;
 
         if ("null".equals(nummer)) {
             finalNummer = null;
@@ -50,11 +61,12 @@ class ArtikelMetNummerTest {
             finalOmschrijving = omschrijving;
         }
 
+
         if (expectException) {
-            IllegalNullArgumentException exception = assertThrows(IllegalNullArgumentException.class, () -> new ArtikelMetNummer(1L, finalNummer, finalMerk, finalNaam, finalOmschrijving) );
+            IllegalNullArgumentException exception = assertThrows(IllegalNullArgumentException.class, () -> new ArtikelMetNummer(1L, finalNummer, finalMerk, finalNaam, finalOmschrijving, finalEenmaligArtikel) );
             assertTrue(exception.getMessage().contains("mag niet null zijn"));
         } else {
-            ArtikelMetNummer artikel = new ArtikelMetNummer(1L, nummer, merk, naam, omschrijving);
+            ArtikelMetNummer artikel = new ArtikelMetNummer(1L, nummer, merk, naam, omschrijving, eenmaligArtikel);
             assertNotNull(artikel);
         }
     }
@@ -62,25 +74,37 @@ class ArtikelMetNummerTest {
     @ParameterizedTest
     @CsvSource({
             // Test combinaties waarbij lege strings een exception moeten gooien
-            "'123', 'Merk', 'Naam', 'Omschrijving', false",   // Geldig
-            "'', 'Merk', 'Naam', 'Omschrijving', true",      // nummer is leeg
-            "'123', '', 'Naam', 'Omschrijving', true",       // merk is leeg
-            "'123', 'Merk', '', 'Omschrijving', true",       // naam is leeg
-            "'123', 'Merk', 'Naam', '', true",               // omschrijving is leeg
-            "'', '', '', '', true",                       // alles is leeg
-            "' ', 'Merk', 'Naam', 'Omschrijving', true",      // nummer is leeg
-            "'123', ' ', 'Naam', 'Omschrijving', true",       // merk is leeg
-            "'123', 'Merk', ' ', 'Omschrijving', true",       // naam is leeg
-            "'123', 'Merk', 'Naam', ' ', true",               // omschrijving is leeg
-            "' ', ' ', ' ', ' ', true",                       // alles is leeg
-
+            "'123', 'Merk', 'Naam', 'Omschrijving', false, false",   // Geldig
+            "'', 'Merk', 'Naam', 'Omschrijving', false, true",      // nummer is leeg
+            "'123', '', 'Naam', 'Omschrijving', false, true",       // merk is leeg
+            "'123', 'Merk', '', 'Omschrijving', false, true",       // naam is leeg
+            "'123', 'Merk', 'Naam', '', false, true",               // omschrijving is leeg
+            "'', '', '', '', false, true",                       // alles is leeg
+            "' ', 'Merk', 'Naam', 'Omschrijving', false, true",      // nummer is leeg
+            "'123', ' ', 'Naam', 'Omschrijving', false, true",       // merk is leeg
+            "'123', 'Merk', ' ', 'Omschrijving', false, true",       // naam is leeg
+            "'123', 'Merk', 'Naam', ' ', false, true",               // omschrijving is leeg
+            "' ', ' ', ' ', ' ', false, true",                       // alles is leeg
+            "'123', 'Merk', 'Naam', 'Omschrijving', true, false",   // Geldig
+            "'', 'Merk', 'Naam', 'Omschrijving', true, true",      // nummer is leeg
+            "'123', '', 'Naam', 'Omschrijving', true, true",       // merk is leeg
+            "'123', 'Merk', '', 'Omschrijving', true, true",       // naam is leeg
+            "'123', 'Merk', 'Naam', '', true, true",               // omschrijving is leeg
+            "'', '', '', '', true, true",                       // alles is leeg
+            "' ', 'Merk', 'Naam', 'Omschrijving', true, true",      // nummer is leeg
+            "'123', ' ', 'Naam', 'Omschrijving', true, true",       // merk is leeg
+            "'123', 'Merk', ' ', 'Omschrijving', true, true",       // naam is leeg
+            "'123', 'Merk', 'Naam', ' ', true, true",               // omschrijving is leeg
+            "' ', ' ', ' ', ' ', true, true",                       // alles is leeg
     })
-    void constructor_ShouldHandleBlankValuesCorrectly(String nummer, String merk, String naam, String omschrijving, boolean expectException) {
+    void constructor_ShouldHandleBlankValuesCorrectly(String nummer, String merk, String naam, String omschrijving, boolean eenmaligArtikel, boolean expectException) {
         final String finalNummer;
         final String finalMerk;
         final String finalNaam;
         final String finalOmschrijving;
+        final boolean finalEenmaligArtikel;
 
+        finalEenmaligArtikel=eenmaligArtikel;
         if (nummer != null && nummer.isBlank()) {
             finalNummer = nummer.trim();
         } else {
@@ -104,11 +128,11 @@ class ArtikelMetNummerTest {
 
         if (expectException) {
             IllegalBlankArgumentException exception = assertThrows(IllegalBlankArgumentException.class, () ->
-                    new ArtikelMetNummer(1L, finalNummer, merk, finalNaam, finalOmschrijving)
+                    new ArtikelMetNummer(1L, finalNummer, merk, finalNaam, finalOmschrijving,finalEenmaligArtikel)
             );
             assertTrue(exception.getMessage().contains("mag niet leeg zijn"));
         } else {
-            ArtikelMetNummer artikel = new ArtikelMetNummer(1L, nummer, merk, naam, omschrijving);
+            ArtikelMetNummer artikel = new ArtikelMetNummer(1L, nummer, merk, naam, omschrijving, eenmaligArtikel);
             assertNotNull(artikel);
         }
     }
@@ -119,19 +143,19 @@ class ArtikelMetNummerTest {
         List<String> exceptions = new ArrayList<>();
 
         try {
-            new ArtikelMetNummer(1L, null, "Merk", "Naam", "Omschrijving");
+            new ArtikelMetNummer(1L, null, "Merk", "Naam", "Omschrijving", false);
         } catch (IllegalArgumentException e) {
             exceptions.add(e.getMessage());
         }
 
         try {
-            new ArtikelMetNummer(1L, "123", " ", "Naam", "Omschrijving");
+            new ArtikelMetNummer(1L, "123", " ", "Naam", "Omschrijving", false);
         } catch (IllegalArgumentException e) {
             exceptions.add(e.getMessage());
         }
 
         try {
-            new ArtikelMetNummer(1L, "123", "Merk", null, "Omschrijving");
+            new ArtikelMetNummer(1L, "123", "Merk", null, "Omschrijving",false);
         } catch (IllegalArgumentException e) {
             exceptions.add(e.getMessage());
         }
@@ -145,13 +169,14 @@ class ArtikelMetNummerTest {
 
     @Test
     void validConstructor_ShouldCreateObject() {
-        ArtikelMetNummer artikel = new ArtikelMetNummer(1L, "123", "Merk", "Naam", "Omschrijving");
+        ArtikelMetNummer artikel = new ArtikelMetNummer(1L, "123", "Merk", "Naam", "Omschrijving",false);
         assertNotNull(artikel);
         assertEquals(1L, artikel.getId());
         assertEquals("123", artikel.getNummer());
         assertEquals("Merk", artikel.getMerk());
         assertEquals("Naam", artikel.getNaam());
         assertEquals("Omschrijving", artikel.getOmschrijving());
+        assertFalse(artikel.isEenmaligProduct());
     }
 }
 

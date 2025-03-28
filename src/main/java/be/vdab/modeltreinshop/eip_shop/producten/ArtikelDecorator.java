@@ -1,5 +1,7 @@
 package be.vdab.modeltreinshop.eip_shop.producten;
 
+import java.util.Collection;
+
 public abstract class ArtikelDecorator implements Artikel {
     private final Artikel gedecoreerdArtikel;
 
@@ -11,28 +13,57 @@ public abstract class ArtikelDecorator implements Artikel {
     }
 
     @Override
-    public long getId() {
+    public final long getId() {
         return gedecoreerdArtikel.getId();
     }
 
     @Override
-    public String getNummer() {
+    public final String getNummer() {
         return gedecoreerdArtikel.getNummer();
     }
 
     @Override
-    public String getNaam() {
+    public final String getNaam() {
         return gedecoreerdArtikel.getNaam();
     }
 
     @Override
-    public String getOmschrijving() {
+    public final String getOmschrijving() {
         return gedecoreerdArtikel.getOmschrijving();
     }
 
     @Override
-    public String getMerk() {
+    public final String getMerk() {
         return gedecoreerdArtikel.getMerk();
     }
-}
+    @Override
+    public final void setNaam(String naam) {
+        gedecoreerdArtikel.setNaam(naam);
+    }
 
+    @Override
+    public final void setOmschrijving(String omschrijving) {
+        gedecoreerdArtikel.setOmschrijving(omschrijving);
+    }
+
+    @Override
+    public final void setMerk(String merk) {
+        gedecoreerdArtikel.setMerk(merk);
+    }
+
+    public final boolean isEenmaligProduct(){
+        return gedecoreerdArtikel.isEenmaligProduct();
+    }
+
+    public final boolean addAfbeelding(String afbeelding){
+        return gedecoreerdArtikel.addAfbeelding(afbeelding);
+    }
+
+    public final boolean removeAfbeelding(String afbeelding){
+        return gedecoreerdArtikel.removeAfbeelding(afbeelding);
+    }
+
+    public final Collection<String> getAfbeeldingen() {
+        return gedecoreerdArtikel.getAfbeeldingen();
+    }
+}
