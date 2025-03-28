@@ -1,5 +1,8 @@
 package be.vdab.modeltreinshop.eip_shop.producten;
 
+import be.vdab.modeltreinshop.eip_shop.util.IllegalBlankArgumentException;
+import be.vdab.modeltreinshop.eip_shop.util.IllegalNullArgumentException;
+
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +31,7 @@ public class ArtikelMetNummer implements Artikel {
             nullParameters.add("omschrijving");
         }
         if (!nullParameters.isEmpty()) {
-            throw new IllegalArgumentException("De volgende parameters mogen niet null zijn: " + String.join(", ", nullParameters));
+            throw new IllegalNullArgumentException(String.join(", ", nullParameters)+" mag niet null zijn: ");
         } else {
             List<String> blankParameters = new ArrayList<>();
             if (nummer.trim().isBlank()) {
@@ -44,13 +47,13 @@ public class ArtikelMetNummer implements Artikel {
                 blankParameters.add("omschrijving");
             }
             if (!blankParameters.isEmpty()) {
-                throw new IllegalArgumentException("De volgende parameters mogen niet leeg zijn: " + String.join(", ", blankParameters));
+                throw new IllegalBlankArgumentException( String.join(", ", blankParameters)+ "mag niet leeg zijn");
             } else {
                 this.id = id;
-                this.nummer = nummer;
-                this.naam = naam;
-                this.omschrijving = omschrijving;
-                this.merk = merk;
+                this.nummer = nummer.trim();
+                this.naam = naam.trim();
+                this.omschrijving = omschrijving.trim();
+                this.merk = merk.trim();
             }
         }
     }
@@ -72,23 +75,31 @@ public class ArtikelMetNummer implements Artikel {
 
     @Override
     public void setNaam(String naam) {
-        if (naam == null || naam.isBlank()) {
-            throw new IllegalArgumentException("Naam mag niet null of leeg zijn.");
+        if (naam == null){
+            throw new IllegalArgumentException("Omschrijving mag niet leeg zijn.");
+        }else {
+            if(naam.trim().isBlank()){
+                throw new IllegalArgumentException("Omschrijving mag niet null zijn.");
+            }
+            this.naam = naam.trim();
         }
-        this.naam = naam;
     }
 
     @Override
     public String getOmschrijving() {
-        return omschrijving;
+        return omschrijving.trim();
     }
 
     @Override
     public void setOmschrijving(String omschrijving) {
-        if (omschrijving == null || omschrijving.isBlank()) {
-            throw new IllegalArgumentException("Omschrijving mag niet null of leeg zijn.");
+        if (omschrijving == null){
+            throw new IllegalArgumentException("Omschrijving mag niet leeg zijn.");
+        }else {
+            if(omschrijving.trim().isBlank()){
+                throw new IllegalArgumentException("Omschrijving mag niet null zijn.");
+            }
+            this.omschrijving = omschrijving.trim();
         }
-        this.omschrijving = omschrijving;
     }
 
     @Override
@@ -98,10 +109,14 @@ public class ArtikelMetNummer implements Artikel {
 
     @Override
     public void setMerk(String merk) {
-        if (merk == null || merk.isBlank()) {
-            throw new IllegalArgumentException("Merk mag niet null of leeg zijn.");
+        if( merk == null){
+            throw new IllegalArgumentException("Omschrijving mag niet leeg zijn.");
+        }else {
+            if(merk.trim().isBlank()){
+                throw new IllegalArgumentException("Omschrijving mag niet null zijn.");
+            }
+            this.merk = merk.trim();
         }
-        this.merk = merk;
     }
 
     @Override

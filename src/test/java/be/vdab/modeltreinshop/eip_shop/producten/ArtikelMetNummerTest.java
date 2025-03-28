@@ -1,5 +1,7 @@
 package be.vdab.modeltreinshop.eip_shop.producten;
 
+import be.vdab.modeltreinshop.eip_shop.util.IllegalBlankArgumentException;
+import be.vdab.modeltreinshop.eip_shop.util.IllegalNullArgumentException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -22,36 +24,34 @@ class ArtikelMetNummerTest {
             "null, null, null, null, true",                   // alles is null
     })
     void constructor_ShouldHandleNullValuesCorrectly(String nummer, String merk, String naam, String omschrijving, boolean expectException) {
-        final String fnummer;
-        final String fmerk;
-        final String fnaam;
-        final String fomschrijving;
+        final String finalNummer;
+        final String finalMerk;
+        final String finalNaam;
+        final String finalOmschrijving;
 
         if ("null".equals(nummer)) {
-            fnummer = null;
+            finalNummer = null;
         } else {
-            fnummer = nummer;
+            finalNummer = nummer;
         }
         if ("null".equals(merk)) {
-            fmerk = null;
+            finalMerk = null;
         } else {
-            fmerk = merk;
+            finalMerk = merk;
         }
         if ("null".equals(naam)) {
-            fnaam = null;
+            finalNaam = null;
         } else {
-            fnaam = naam;
+            finalNaam = naam;
         }
         if ("null".equals(omschrijving)) {
-            fomschrijving = null;
+            finalOmschrijving = null;
         } else {
-            fomschrijving = omschrijving;
+            finalOmschrijving = omschrijving;
         }
 
         if (expectException) {
-            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                    new ArtikelMetNummer(1L, fnummer, fmerk, fnaam, fomschrijving)
-            );
+            IllegalNullArgumentException exception = assertThrows(IllegalNullArgumentException.class, () -> new ArtikelMetNummer(1L, finalNummer, finalMerk, finalNaam, finalOmschrijving) );
             assertTrue(exception.getMessage().contains("mag niet null zijn"));
         } else {
             ArtikelMetNummer artikel = new ArtikelMetNummer(1L, nummer, merk, naam, omschrijving);
@@ -76,35 +76,35 @@ class ArtikelMetNummerTest {
 
     })
     void constructor_ShouldHandleBlankValuesCorrectly(String nummer, String merk, String naam, String omschrijving, boolean expectException) {
-        final String fnummer;
-        final String fmerk;
-        final String fnaam;
-        final String fomschrijving;
+        final String finalNummer;
+        final String finalMerk;
+        final String finalNaam;
+        final String finalOmschrijving;
 
         if (nummer != null && nummer.isBlank()) {
-            fnummer = nummer.trim();
+            finalNummer = nummer.trim();
         } else {
-            fnummer = nummer;
+            finalNummer = nummer;
         }
         if (merk != null && merk.isBlank()) {
-            fmerk = merk.trim();
+            finalMerk = merk.trim();
         } else {
-            fmerk = merk;
+            finalMerk = merk;
         }
         if (naam != null && naam.isBlank()) {
-            fnaam = naam.trim();
+            finalNaam = naam.trim();
         } else {
-            fnaam = naam;
+            finalNaam = naam;
         }
         if (omschrijving != null && omschrijving.isBlank()) {
-            fomschrijving = omschrijving.trim();
+            finalOmschrijving = omschrijving.trim();
         } else {
-            fomschrijving = omschrijving;
+            finalOmschrijving = omschrijving;
         }
 
         if (expectException) {
-            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                    new ArtikelMetNummer(1L, fnummer, fmerk, fnaam, fomschrijving)
+            IllegalBlankArgumentException exception = assertThrows(IllegalBlankArgumentException.class, () ->
+                    new ArtikelMetNummer(1L, finalNummer, merk, finalNaam, finalOmschrijving)
             );
             assertTrue(exception.getMessage().contains("mag niet leeg zijn"));
         } else {

@@ -1,4 +1,4 @@
-package util;
+package be.vdab.modeltreinshop.eip_shop.util;
 
 public class IllegalBlankArgumentException extends IllegalNullArgumentException{
     public IllegalBlankArgumentException() {
