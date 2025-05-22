@@ -1,7 +1,7 @@
-package be.vdab.modeltreinshop.eip_shop.producten;
+package com.example.modeltreinshop.eip_shop.producten;
 
-import be.vdab.modeltreinshop.eip_shop.util.IllegalBlankArgumentException;
-import be.vdab.modeltreinshop.eip_shop.util.IllegalNullArgumentException;
+import com.example.modeltreinshop.eip_shop.util.IllegalBlankArgumentException;
+import com.example.modeltreinshop.eip_shop.util.IllegalNullArgumentException;
 
 import java.io.Serial;
 import java.util.ArrayList;
