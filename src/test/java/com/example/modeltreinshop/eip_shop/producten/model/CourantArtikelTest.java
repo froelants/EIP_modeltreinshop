@@ -1,4 +1,4 @@
-package com.example.modeltreinshop.eip_shop.producten;
+package com.example.modeltreinshop.eip_shop.producten.model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ class CourantArtikelTest {
     @BeforeEach
     void beforeEach() {
         basisArtikel = new ArtikelMetNummer(1, "TEST001", "TestMerk",
-                "TestNaam", "TestOmschrijving", false);
+                                            "TestNaam", "TestOmschrijving", false);
         datum = LocalDate.now();
         artikel = new CourantArtikel(
                 basisArtikel, datum, AANKOOPPRIJS, WINSTMARGE,

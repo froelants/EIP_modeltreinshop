@@ -1,4 +1,4 @@
-package com.example.modeltreinshop.eip_shop.producten;
+package com.example.modeltreinshop.eip_shop.producten.model;
 
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;

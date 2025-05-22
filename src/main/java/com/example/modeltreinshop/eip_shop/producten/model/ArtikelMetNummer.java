@@ -1,4 +1,4 @@
-package com.example.modeltreinshop.eip_shop.producten;
+package com.example.modeltreinshop.eip_shop.producten.model;
 
 import com.example.modeltreinshop.eip_shop.util.IllegalBlankArgumentException;
 import com.example.modeltreinshop.eip_shop.util.IllegalNullArgumentException;

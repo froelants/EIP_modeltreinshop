@@ -1,4 +1,4 @@
-package com.example.modeltreinshop.eip_shop.producten;
+package com.example.modeltreinshop.eip_shop.producten.model;
 
 public class GewoonArtikel extends ArtikelDecorator{
 

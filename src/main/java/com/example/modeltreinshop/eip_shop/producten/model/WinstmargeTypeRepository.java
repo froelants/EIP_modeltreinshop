@@ -1,4 +1,4 @@
-package com.example.modeltreinshop.eip_shop.producten;
+package com.example.modeltreinshop.eip_shop.producten.model;
 
 import com.jouwbedrijf.artikelbeheer.domain.WinstmargeType;
 import org.springframework.data.jpa.repository.JpaRepository;

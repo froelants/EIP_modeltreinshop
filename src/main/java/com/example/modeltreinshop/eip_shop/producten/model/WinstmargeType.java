@@ -1,4 +1,4 @@
-package com.example.modeltreinshop.eip_shop.producten;
+package com.example.modeltreinshop.eip_shop.producten.model;
 
 public enum WinstmargeType {
     EURO(new EuroWinstmargeStrategy()),
