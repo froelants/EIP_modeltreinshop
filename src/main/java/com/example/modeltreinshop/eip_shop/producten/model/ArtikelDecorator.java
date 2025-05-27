@@ -1,4 +1,4 @@
-package com.example.modeltreinshop.eip_shop.producten.model;
+package com.example.modeltreinshop.eip_shop.producten;
 
 import java.util.Collection;
 

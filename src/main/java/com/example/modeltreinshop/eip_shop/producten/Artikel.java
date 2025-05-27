@@ -1,4 +1,4 @@
-package be.vdab.modeltreinshop.eip_shop.producten;
+package com.example.modeltreinshop.eip_shop.producten.model;
 
 import java.io.Serializable;
 import java.util.Collection;
