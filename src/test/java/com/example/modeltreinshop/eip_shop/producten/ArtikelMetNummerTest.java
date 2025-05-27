@@ -1,9 +1,8 @@
 package be.vdab.modeltreinshop.eip_shop.producten;
 
-import be.vdab.modeltreinshop.eip_shop.util.IllegalBlankArgumentException;
-import be.vdab.modeltreinshop.eip_shop.util.IllegalNullArgumentException;
-import jakarta.validation.constraints.AssertFalse;
-import jakarta.validation.constraints.AssertTrue;
+import com.example.modeltreinshop.eip_shop.util.IllegalBlankArgumentException;
+import com.example.modeltreinshop.eip_shop.util.IllegalNullArgumentException;
+import com.example.modeltreinshop.eip_shop.producten.ArtikelMetNummer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
