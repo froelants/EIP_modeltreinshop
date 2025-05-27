@@ -1,4 +1,4 @@
-package com.example.modeltreinshop.eip_shop.producten.model;
+package com.example.modeltreinshop.eip_shop.producten;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
