@@ -1,5 +1,6 @@
 package com.example.modeltreinshop.eip_shop.producten.model;
 
+import com.example.modeltreinshop.eip_shop.producten.ArtikelInVoorbestelling;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

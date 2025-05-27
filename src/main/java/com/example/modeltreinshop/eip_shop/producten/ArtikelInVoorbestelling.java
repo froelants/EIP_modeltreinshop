@@ -1,4 +1,9 @@
-package com.example.modeltreinshop.eip_shop.producten.model;
+package com.example.modeltreinshop.eip_shop.producten;
+
+import com.example.modeltreinshop.eip_shop.producten.model.Artikel;
+import com.example.modeltreinshop.eip_shop.producten.model.ArtikelDecorator;
+import com.example.modeltreinshop.eip_shop.producten.model.PrijsComponent;
+import com.example.modeltreinshop.eip_shop.producten.model.WinstmargeType;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

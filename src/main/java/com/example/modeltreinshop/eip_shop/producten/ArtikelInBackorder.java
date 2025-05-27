@@ -1,4 +1,6 @@
-package com.example.modeltreinshop.eip_shop.producten.model;
+package com.example.modeltreinshop.eip_shop.producten;
+
+import com.example.modeltreinshop.eip_shop.producten.model.ArtikelDecorator;
 
 import java.time.LocalDate;
 
