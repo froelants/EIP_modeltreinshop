@@ -1,0 +1,4 @@
+artikelnummer,naam,omschrijving,aankoopprijs,winstmarge,type,voorraad,minimaleVoorraad,normaleVoorraad,minimaleBestelhoeveelheid
+39829,Märklin BR 182,Electric Locomotive,429.99,70.00,EURO,5,2,10,1
+73953,Roco BR 193,Diesel Locomotive,199.99,50.00,EURO,3,2,8,2
+37301,Märklin 37301,Sound Locomotive,429.99,70.00,PERCENTAGE,7,3,12,1
