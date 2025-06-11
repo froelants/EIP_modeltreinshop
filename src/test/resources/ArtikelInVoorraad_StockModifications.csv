@@ -1,0 +1,4 @@
+artikelnummer,naam,merk,omschrijving,gratisArtikel,aankoopprijs,winstmarge,winstmargeType,verkoopprijs,afbeeldingen,initialVoorraad,wijziging,expectedVoorraad
+73916,BR 193 Vectron,Roco,DB BR 193,false,259.99,40.00,PERCENTAGE,363.99,73916-1.jpg,10,5,15
+71400,ICE 4 Basis,PIKO,ICE 4,false,399.99,50.00,EURO,449.99,71400.jpg,10,-5,5
+88487,BR 101,Märklin,Z-lok,false,189.99,30.00,PERCENTAGE,246.99,88487.jpg,5,0,5

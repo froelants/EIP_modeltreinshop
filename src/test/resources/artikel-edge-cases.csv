@@ -1,0 +1,4 @@
+artikelnummer,naam,merk,omschrijving,gratisArtikel,aankoopprijs,winstmarge,winstmargeType,verkoopprijs,afbeelding
+MIN001,Min Price,Test,Minimum price item,false,0.01,0.01,EURO,0.02,https://test.com/img1.jpg
+MIN002,Min Margin,Test,Minimum margin item,false,10.00,0.01,PERCENTAGE,10.01,https://test.com/img2.jpg
+MAX001,Max Price,Test,Maximum price item,false,9999.99,100.00,PERCENTAGE,19999.98,https://test.com/img3.jpg

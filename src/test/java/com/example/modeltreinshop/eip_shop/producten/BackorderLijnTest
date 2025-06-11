@@ -1,0 +1,193 @@
+package com.example.modeltreinshop.eip_shop.producten;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.time.LocalDate;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.*;
+
+@DisplayName("BackorderLijn Tests")
+class BackorderLijnTest {
+
+    @Nested
+    @DisplayName("Constructor Tests")
+    class ConstructorTests {
+
+        @ParameterizedTest
+        @CsvFileSource(resources = "/backorderLijn/valid_backorders.csv", numLinesToSkip = 1)
+        @DisplayName("Should create BackorderLijn with valid parameters")
+        void shouldCreateBackorderLijnWithValidParameters(LocalDate expectedDeliveryDate, int expectedAmount) {
+            BackorderLijn backorderLijn = new BackorderLijn(expectedDeliveryDate, expectedAmount);
+
+            assertThat(backorderLijn.getExpectedDeliveryDate()).isEqualTo(expectedDeliveryDate);
+            assertThat(backorderLijn.getExpectedAmount()).isEqualTo(expectedAmount);
+        }
+
+        @ParameterizedTest
+        @MethodSource("com.example.modeltreinshop.eip_shop.producten.BackorderLijnTest#invalidConstructorParameters")
+        @DisplayName("Should throw exception for invalid constructor parameters")
+        void shouldThrowExceptionForInvalidConstructorParameters(
+                LocalDate expectedDeliveryDate,
+                int expectedAmount,
+                String expectedMessage) {
+
+            assertThatThrownBy(() -> new BackorderLijn(expectedDeliveryDate, expectedAmount))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining(expectedMessage);
+        }
+    }
+
+    @Nested
+    @DisplayName("Date Validation Tests")
+    class DateValidationTests {
+
+        @Test
+        @DisplayName("Should accept today as delivery date")
+        void shouldAcceptTodayAsDeliveryDate() {
+            LocalDate today = LocalDate.now();
+            BackorderLijn backorderLijn = new BackorderLijn(today, 1);
+
+            assertThat(backorderLijn.getExpectedDeliveryDate()).isEqualTo(today);
+        }
+
+        @Test
+        @DisplayName("Should throw exception for past date")
+        void shouldThrowExceptionForPastDate() {
+            LocalDate pastDate = LocalDate.now().minusDays(1);
+
+            assertThatThrownBy(() -> new BackorderLijn(pastDate, 1))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("Verwachte leverdatum mag niet in het verleden liggen");
+        }
+
+        @Test
+        @DisplayName("Should accept far future date")
+        void shouldAcceptFarFutureDate() {
+            LocalDate farFuture = LocalDate.now().plusYears(10);
+            BackorderLijn backorderLijn = new BackorderLijn(farFuture, 1);
+
+            assertThat(backorderLijn.getExpectedDeliveryDate()).isEqualTo(farFuture);
+        }
+    }
+
+    @Nested
+    @DisplayName("Amount Validation Tests")
+    class AmountValidationTests {
+
+        @ParameterizedTest
+        @CsvFileSource(resources = "/backorderLijn/valid_amounts.csv", numLinesToSkip = 1)
+        @DisplayName("Should accept valid amounts")
+        void shouldAcceptValidAmounts(int amount) {
+            LocalDate futureDate = LocalDate.now().plusDays(1);
+            BackorderLijn backorderLijn = new BackorderLijn(futureDate, amount);
+
+            assertThat(backorderLijn.getExpectedAmount()).isEqualTo(amount);
+        }
+
+        @ParameterizedTest
+        @MethodSource("com.example.modeltreinshop.eip_shop.producten.BackorderLijnTest#invalidAmounts")
+        @DisplayName("Should throw exception for invalid amounts")
+        void shouldThrowExceptionForInvalidAmounts(int invalidAmount, String expectedMessage) {
+            LocalDate futureDate = LocalDate.now().plusDays(1);
+
+            assertThatThrownBy(() -> new BackorderLijn(futureDate, invalidAmount))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining(expectedMessage);
+        }
+
+        @Test
+        @DisplayName("Should handle maximum integer amount")
+        void shouldHandleMaximumIntegerAmount() {
+            LocalDate futureDate = LocalDate.now().plusDays(1);
+            BackorderLijn backorderLijn = new BackorderLijn(futureDate, Integer.MAX_VALUE);
+
+            assertThat(backorderLijn.getExpectedAmount()).isEqualTo(Integer.MAX_VALUE);
+        }
+    }
+
+    @Nested
+    @DisplayName("Update Tests")
+    class UpdateTests {
+
+        @ParameterizedTest
+        @CsvFileSource(resources = "/backorderLijn/amount_updates.csv", numLinesToSkip = 1)
+        @DisplayName("Should update amount correctly")
+        void shouldUpdateAmountCorrectly(int initialAmount, int updatedAmount) {
+            LocalDate futureDate = LocalDate.now().plusDays(1);
+            BackorderLijn backorderLijn = new BackorderLijn(futureDate, initialAmount);
+
+            backorderLijn.setExpectedAmount(updatedAmount);
+
+            assertThat(backorderLijn.getExpectedAmount()).isEqualTo(updatedAmount);
+        }
+
+        @Test
+        @DisplayName("Should update delivery date correctly")
+        void shouldUpdateDeliveryDateCorrectly() {
+            LocalDate initialDate = LocalDate.now().plusDays(1);
+            LocalDate updatedDate = LocalDate.now().plusDays(2);
+            BackorderLijn backorderLijn = new BackorderLijn(initialDate, 1);
+
+            backorderLijn.setExpectedDeliveryDate(updatedDate);
+
+            assertThat(backorderLijn.getExpectedDeliveryDate()).isEqualTo(updatedDate);
+        }
+
+        @ParameterizedTest
+        @MethodSource("com.example.modeltreinshop.eip_shop.producten.BackorderLijnTest#invalidUpdateParameters")
+        @DisplayName("Should throw exception for invalid updates")
+        void shouldThrowExceptionForInvalidUpdates(
+                LocalDate newDate,
+                Integer newAmount,
+                String expectedMessage) {
+
+            LocalDate initialDate = LocalDate.now().plusDays(1);
+            BackorderLijn backorderLijn = new BackorderLijn(initialDate, 1);
+
+            if (newDate != null) {
+                assertThatThrownBy(() -> backorderLijn.setExpectedDeliveryDate(newDate))
+                        .isInstanceOf(IllegalArgumentException.class)
+                        .hasMessageContaining(expectedMessage);
+            }
+
+            if (newAmount != null) {
+                assertThatThrownBy(() -> backorderLijn.setExpectedAmount(newAmount))
+                        .isInstanceOf(IllegalArgumentException.class)
+                        .hasMessageContaining(expectedMessage);
+            }
+        }
+    }
+
+    private static Stream<Arguments> invalidConstructorParameters() {
+        return Stream.of(
+            Arguments.of(null, 1, "Verwachte leverdatum mag niet null zijn"),
+            Arguments.of(LocalDate.now().minusDays(1), 1, "Verwachte leverdatum mag niet in het verleden liggen"),
+            Arguments.of(LocalDate.now().plusDays(1), 0, "Verwacht aantal moet positief zijn"),
+            Arguments.of(LocalDate.now().plusDays(1), -1, "Verwacht aantal moet positief zijn")
+        );
+    }
+
+    private static Stream<Arguments> invalidAmounts() {
+        return Stream.of(
+            Arguments.of(0, "Verwacht aantal moet positief zijn"),
+            Arguments.of(-1, "Verwacht aantal moet positief zijn"),
+            Arguments.of(-100, "Verwacht aantal moet positief zijn")
+        );
+    }
+
+    private static Stream<Arguments> invalidUpdateParameters() {
+        return Stream.of(
+            Arguments.of(null, null, "Verwachte leverdatum mag niet null zijn"),
+            Arguments.of(LocalDate.now().minusDays(1), null, "Verwachte leverdatum mag niet in het verleden liggen"),
+            Arguments.of(null, 0, "Verwacht aantal moet positief zijn"),
+            Arguments.of(null, -1, "Verwacht aantal moet positief zijn")
+        );
+    }
+}

@@ -1,0 +1,5 @@
+artikelnummer,naam,merk,omschrijving,gratisArtikel,aankoopprijs,winstmarge,winstmargeType,verkoopprijs,afbeeldingUrls
+"RO72889","Roco H0 Diesellok BR 232 DB AG","Roco","Diesellokomotive BR 232 der DB AG",false,199.99,40.00,PERCENTAGE,279.99,"72889-1.jpg;72889-2.jpg"
+"FL73499","Fleischmann N E-Lok BR 101","Fleischmann","Elektrolokomotive BR 101 der DB AG",false,169.99,35.00,PERCENTAGE,229.49,"73499-1.jpg"
+"LZ58145","Lenz Digital Plus Set 100","Lenz","Basis digitaalset met centrale en handregelaar",false,299.99,60.00,EURO,359.99,"58145-1.jpg;58145-2.jpg;58145-3.jpg"
+"M99999","Märklin Catalogus 2024","Märklin","Jaarlijkse hoofdcatalogus 2024",true,0.00,0.00,PERCENTAGE,0.00,"catalog-2024.jpg"

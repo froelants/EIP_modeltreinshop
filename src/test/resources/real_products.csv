@@ -1,0 +1,4 @@
+artikelnummer,naam,aankoopprijs,winstmarge,type,expectedVerkoopprijs,verkoopprijs,afbeeldingen
+39829,Märklin BR 182,429.99,70.00,EURO,499.99,499.99,39829-1.jpg;39829-2.jpg
+60216,PIKO BR 147,289.99,50.00,EURO,339.99,339.99,60216.jpg
+73141,Roco NS 1200,199.99,25.00,PERCENTAGE,249.99,249.99,73141-1.jpg;73141-2.jpg;73141-3.jpg

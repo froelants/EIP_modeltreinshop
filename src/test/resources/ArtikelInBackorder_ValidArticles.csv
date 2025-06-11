@@ -1,0 +1,4 @@
+artikelnummer,naam,merk,omschrijving,gratisArtikel,aankoopprijs,winstmarge,winstmargeType,verkoopprijs,afbeeldingen,voorraad,minimaleVoorraad,normaleVoorraad,minimaleBestelhoeveelheid,verwachteDatum,aantalInBackorder
+36435,DB BR 243,Märklin,H0 E-Lok BR 243 DR Ep.IV,false,329.99,45.00,PERCENTAGE,478.49,36435-1.jpg;36435-2.jpg,0,5,15,2,2024-06-30,10
+73127,NS 1600,Roco,Elektrische locomotief NS 1600,false,249.99,40.00,EURO,289.99,73127.jpg,2,3,10,1,2024-05-15,5
+58469,PIKO BR 112,PIKO,BR 112 DB AG Ep.VI,false,189.99,35.00,PERCENTAGE,256.49,58469-1.jpg;58469-2.jpg,1,5,12,2,2024-07-31,8

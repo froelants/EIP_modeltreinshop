@@ -1,0 +1,4 @@
+artikelnummer,naam,merk,omschrijving,gratisArtikel,aankoopprijs,winstmarge,winstmargeType,verkoopprijs,afbeeldingen,eindDatum
+73141,Roco NS 1200,Roco,Nederlandse elektrische locomotief NS 1200 blauw,false,199.99,25.00,PERCENTAGE,249.99,73141-1.jpg;73141-2.jpg,2024-12-31
+60216,PIKO BR 147,PIKO,Elektrische locomotief BR 147 DB Cargo,false,289.99,50.00,EURO,339.99,60216.jpg,2024-06-30
+39829,Märklin BR 182,Märklin,H0 DB BR 193 320-1 'Vectron',false,429.99,70.00,EURO,499.99,39829-1.jpg;39829-2.jpg,2025-01-31

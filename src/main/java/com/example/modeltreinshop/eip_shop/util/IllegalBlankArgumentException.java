@@ -1,6 +1,6 @@
 package com.example.modeltreinshop.eip_shop.util;
 
-public class IllegalBlankArgumentException extends IllegalNullArgumentException{
+public class IllegalBlankArgumentException extends IllegalNullArgumentException {
     public IllegalBlankArgumentException() {
     }
 
@@ -8,7 +8,8 @@ public class IllegalBlankArgumentException extends IllegalNullArgumentException{
         super(s);
     }
 
-    public IllegalBlankArgumentException(String message, Throwable cause) {
+    public IllegalBlankArgumentException(String message,
+                                         Throwable cause) {
         super(message, cause);
     }
 

@@ -1,0 +1,55 @@
+artikelnummer,naam,merk,aankoopprijs,winstmarge,verkoopprijs,voorbestellingsprijs,omschrijving,voorschot,leveringsmaand,leveringsjaar
+73141,,Piko,159.99,25.0,199.99,149.99,Digital + Sound,37.99,13,2024
+73150,Dampflok BR 50 DR IV,,299.99,20.0,359.99,289.99,Neuheit 2024,67.99,0,2024
+36292,ICE 4 Baureihe 412/812 DB AG,Märklin,-329.99,22.0,399.99,379.99,Limited Edition,75.99,6,2023
+73141,E-Lok BR 141 DB IV,Pika,159.99,1.0,PERCENTAGE,161.59,160.99,Digital + Sound 1%,32.19,6,2024
+73141,E-Lok BR 141 DB IV,Pike,159.99,1.00,EURO,160.99,160.49,Digital + Sound Fixed,32.09,6,2024
+73141,E-Lok BR 141 DB IV,Piki,159.99,79.99,EURO,239.98,229.99,Digital + Sound 50%,45.99,6,2024
+73141,E-Lok BR 141 DB IV,Piko,159.99,50.0,PERCENTAGE,239.98,229.99,Digital + Sound Half,45.99,6,2024
+73150,Dampflok BR 50 DR IV,Roca,299.99,1.0,PERCENTAGE,302.99,301.99,Neuheit 2024 1%,60.39,9,2024
+73150,Dampflok BR 50 DR IV,Roce,299.99,1.00,EURO,300.99,300.49,Neuheit 2024 Fixed,60.09,9,2024
+73150,Dampflok BR 50 DR IV,Roci,299.99,149.99,EURO,449.98,439.99,Neuheit 2024 50%,87.99,9,2024
+73150,Dampflok BR 50 DR IV,Roco,299.99,50.0,PERCENTAGE,449.98,439.99,Neuheit 2024 Half,87.99,9,2024
+36292,ICE 4 Baureihe 412/812,Märklan,329.99,1.0,PERCENTAGE,333.29,332.29,Limited 1%,66.45,12,2024
+36292,ICE 4 Baureihe 412/812,Märklen,329.99,1.00,EURO,330.99,330.49,Limited Fixed,66.09,12,2024
+36292,ICE 4 Baureihe 412/812,Märklin,329.99,164.99,EURO,494.98,484.99,Limited 50%,96.99,12,2024
+36292,ICE 4 Baureihe 412/812,Märklon,329.99,50.0,PERCENTAGE,494.98,484.99,Limited Half,96.99,12,2024
+,Test Naam,Test Merk,159.99,25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,37.99,6,2024,false
+Test Art,,Test Merk,159.99,25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,37.99,6,2024,false
+Test Art,Test Naam,,159.99,25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,37.99,6,2024,false
+Test Art,Test Naam,Test Merk,159.99,25.0,PERCENTAGE,199.99,189.99,,37.99,6,2024,false
+,,,159.99,25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,37.99,6,2024,false
+Test Art,,,159.99,25.0,PERCENTAGE,199.99,189.99,,37.99,6,2024,false
+,,Test Merk,159.99,25.0,PERCENTAGE,199.99,189.99,,37.99,6,2024,false
+,Test Naam,,159.99,25.0,PERCENTAGE,199.99,189.99,,37.99,6,2024,false
+"","Test Naam",Test Merk,159.99,25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,37.99,6,2024,false
+Test Art,"",Test Merk,159.99,25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,37.99,6,2024,false
+Test Art,Test Naam,"",159.99,25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,37.99,6,2024,false
+Test Art,Test Naam,Test Merk,159.99,25.0,PERCENTAGE,199.99,189.99,"",37.99,6,2024,false
+"","","",159.99,25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,37.99,6,2024,false
+" ",Test Naam,Test Merk,159.99,25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,37.99,6,2024,false
+"   ",Test Naam,Test Merk,159.99,25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,37.99,6,2024,false
+Test Art," ",Test Merk,159.99,25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,37.99,6,2024,false
+Test Art,"   ",Test Merk,159.99,25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,37.99,6,2024,false
+"\n",Test Naam,Test Merk,159.99,25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,37.99,6,2024,false
+"\t",Test Naam,Test Merk,159.99,25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,37.99,6,2024,false
+Test Art,"\n",Test Merk,159.99,25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,37.99,6,2024,false
+Test Art,Test Naam,"\n",159.99,25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,37.99,6,2024,false
+Test Art,Test Naam,Test Merk,-159.99,25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,37.99,6,2024,false
+Test Art,Test Naam,Test Merk,0.00,25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,37.99,6,2024,false
+Test Art,Test Naam,Test Merk,159.99,-25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,37.99,6,2024,false
+Test Art,Test Naam,Test Merk,159.99,0.0,PERCENTAGE,199.99,189.99,Test Omschrijving,37.99,6,2024,false
+Test Art,Test Naam,Test Merk,159.99,25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,-37.99,6,2024,false
+Test Art,Test Naam,Test Merk,159.99,25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,0.00,6,2024,false
+Test Art,Test Naam,Test Merk,159.99,25.0,PERCENTAGE,149.99,189.99,Test Omschrijving,37.99,6,2024,false
+Test Art,Test Naam,Test Merk,159.99,25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,37.99,0,2024,false
+Test Art,Test Naam,Test Merk,159.99,25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,37.99,13,2024,false
+Test Art,Test Naam,Test Merk,159.99,25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,37.99,6,2023,false
+Test Art,Test Naam,Test Merk,159.99,25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,37.99,-1,2024,false
+Test Art,Test Naam,Test Merk,159.99,25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,37.99,6,2024,true
+Test Art,Test Naam,Test Merk,159.99,25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,37.99,,2024,false
+,Test Naam,Test Merk,-159.99,25.0,PERCENTAGE,199.99,189.99,Test Omschrijving,37.99,13,2024,false
+Test Art,"","",-159.99,-25.0,PERCENTAGE,199.99,189.99,"",0.00,0,2023,false
+"\n","\t","\n",0.00,0.0,PERCENTAGE,149.99,189.99,"\t",-37.99,13,2023,true
+Test Art,Test Naam,Test Merk,999999999.99,999999.0,PERCENTAGE,999999999.99,999999999.99,Test Omschrijving,999999.99,12,9999,false
+Test Art,Test Naam,Test Merk,0.01,0.01,PERCENTAGE,0.01,0.01,Test Omschrijving,0.01,1,2024,false

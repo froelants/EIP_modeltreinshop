@@ -1,56 +1,99 @@
 package com.example.modeltreinshop.eip_shop.producten;
 
-import com.example.modeltreinshop.eip_shop.producten.model.ArtikelDecorator;
-
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Collections;
 
-public class ArtikelInBackorder extends ArtikelDecorator {
+public class ArtikelInBackorder extends CourantArtikel {
+    /* ArtikelInBackorder Class
+     * Business Logic:
+     * - Represents articles that are temporarily out of stock
+     * - Maintains list of BackorderLijn entries
+     * - Each BackorderLijn contains:
+     *   - Expected delivery date
+     *   - Number of items expected
+     * - Total backorder amount is sum of all BackorderLijn amounts
+     * - Can add new backorder lines with validation
+     * - Tracks when items will be back in stock
+     */
     private final LocalDate besteldatum;
-    private final int aantalInBackorder;
-    private final int verwachteLeveringstijdInDagen;
-    private final ArtikelInVoorraad artikelInVoorraad;
+    private final Map<Integer, BackorderLijn> backorders;
+    private int nextBackorderId;
 
-    public ArtikelInBackorder(ArtikelInVoorraad artikel, LocalDate besteldatum,
-                              int aantalInBackorder, int verwachteLeveringstijdInDagen) {
-        super(artikel);
+    public ArtikelInBackorder(String artikelnummer,
+                              String naam,
+                              String merk,
+                              String omschrijving,
+                              boolean gratisArtikel,
+                              BigDecimal aankoopprijs,
+                              BigDecimal winstmarge,
+                              WinstmargeType winstmargeType,
+                              BigDecimal verkoopprijs,
+                              List<String> afbeeldingen,
+                              int voorraad,
+                              int minimaleVoorraad,
+                              int normaleVoorraad,
+                              int minimaleBestelhoeveelheid,
+                              LocalDate besteldatum) {
+        super(artikelnummer, naam, merk, omschrijving, gratisArtikel,
+              aankoopprijs, winstmarge, winstmargeType, verkoopprijs,
+              afbeeldingen, voorraad, minimaleVoorraad, normaleVoorraad,
+              minimaleBestelhoeveelheid);
 
-        if (artikel.isEenmaligProduct()) {
-            throw new IllegalArgumentException("Eenmalige artikelen kunnen niet in backorder");
-        }
-        if (artikel.getClass().equals(ArtikelInVoorbestelling.class)) {
-            throw new IllegalArgumentException("Artikelen in voorbestelling kunnen niet in backorder");
-        }
         if (besteldatum == null) {
             throw new IllegalArgumentException("Besteldatum mag niet null zijn");
         }
-        if (aantalInBackorder <= 0) {
-            throw new IllegalArgumentException("Aantal in backorder moet groter zijn dan 0");
+
+        this.besteldatum = besteldatum;
+        this.backorders = new HashMap<>();
+        this.nextBackorderId = 1;
+    }
+
+    public int addBackorderLijn(LocalDate verwachteDatum, int aantal) {
+        if (aantal <= 0) {
+            throw new IllegalArgumentException("Aantal moet positief zijn");
         }
-        if (verwachteLeveringstijdInDagen <= 0) {
-            throw new IllegalArgumentException("Verwachte leveringstijd moet groter zijn dan 0");
+        if (verwachteDatum == null || verwachteDatum.isBefore(besteldatum)) {
+            throw new IllegalArgumentException("Verwachte datum moet na besteldatum liggen");
         }
 
-        this.artikelInVoorraad = artikel;
-        this.besteldatum = besteldatum;
-        this.aantalInBackorder = aantalInBackorder;
-        this.verwachteLeveringstijdInDagen = verwachteLeveringstijdInDagen;
+        int backorderId = nextBackorderId++;
+        backorders.put(backorderId, new BackorderLijn(verwachteDatum, aantal));
+        return backorderId;
+    }
+
+    public void removeBackorderLijn(int backorderId) {
+        if (!backorders.containsKey(backorderId)) {
+            throw new IllegalArgumentException("Backorder ID bestaat niet");
+        }
+        backorders.remove(backorderId);
+    }
+
+    public int getAantalInBackorder() {
+        return backorders.values().stream()
+                         .mapToInt(BackorderLijn::getAantal)
+                         .sum();
     }
 
     public LocalDate getBesteldatum() {
         return besteldatum;
     }
 
-    public int getAantalInBackorder() {
-        return aantalInBackorder;
+    public Map<Integer, BackorderLijn> getBackorders() {
+        return Collections.unmodifiableMap(backorders);
     }
 
-    public int getVerwachteLeveringstijdInDagen() {
-        return verwachteLeveringstijdInDagen;
-    }
-
-    public LocalDate berekenVerwachteLeveringsdatum() {
-        LocalDate verwachteDatum = besteldatum.plusDays(verwachteLeveringstijdInDagen);
-        artikelInVoorraad.setLaatsteAankoopdatum(verwachteDatum);
-        return verwachteDatum;
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(super.toString());
+        sb.append("\nBackordergegevens:");
+        sb.append(String.format("\n  Besteldatum: %s", besteldatum));
+        backorders.forEach((id, lijn) ->
+                                   sb.append(String.format("\n  ID %d: %d artikelen verwacht op %s",
+                                                           id, lijn.getAantal(), lijn.getVerwachteDatum())));
+        return sb.toString();
     }
 }

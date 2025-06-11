@@ -1,170 +1,310 @@
 package com.example.modeltreinshop.eip_shop.producten;
 
-package com.example.modeltreinshop.eip_shop.producten;
-
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.ValueSource;
+
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
-import static org.junit.jupiter.api.Assertions.*;
 
+import static org.assertj.core.api.Assertions.*;
+
+@DisplayName("Artikel Tests")
 class ArtikelTest {
 
-    // Test implementation of abstract class
-    private static class TestArtikel extends Artikel {
-        public TestArtikel(String artikelnummer, String naam, String merk,
-                           String omschrijving, boolean gratisArtikel,
-                           BigDecimal aankoopprijs, BigDecimal winstmarge,
-                           WinstmargeType winstmargeType, BigDecimal verkoopprijs,
+    // First, create a concrete test implementation
+    private static class TestArtikel
+            extends Artikel {
+        public TestArtikel(String artikelnummer,
+                           String naam,
+                           String merk,
+                           String omschrijving,
+                           boolean gratisArtikel,
+                           BigDecimal aankoopprijs,
+                           BigDecimal winstmarge,
+                           WinstmargeType type,
+                           BigDecimal verkoopprijs,
                            List<String> afbeeldingen) {
-            super(artikelnummer, naam, merk, omschrijving, gratisArtikel,
-                  aankoopprijs, winstmarge, winstmargeType, verkoopprijs, afbeeldingen);
+            super(artikelnummer,
+                  naam,
+                  merk,
+                  omschrijving,
+                  gratisArtikel,
+                  aankoopprijs,
+                  winstmarge,
+                  type,
+                  verkoopprijs,
+                  afbeeldingen);
         }
     }
 
-    private static Stream<Arguments> validArtikelParameters() {
-        return Stream.of(
-                // Normal artikel
-                Arguments.of(
-                        "ART001", "Test Artikel", "Test Merk", "Omschrijving",
-                        false, new BigDecimal("10.00"), new BigDecimal("1.5"),
-                        WinstmargeType.PERCENTAGE, new BigDecimal("25.00"),
-                        List.of("https://example.com/img1.jpg")
-                ),
-                // Gratis artikel
-                Arguments.of(
-                        "ART002", "Gratis Item", "Test Merk", "Gratis omschrijving",
-                        true, BigDecimal.ZERO, BigDecimal.ZERO,
-                        WinstmargeType.PERCENTAGE, BigDecimal.ZERO,
-                        List.of("https://example.com/img2.jpg")
-                )
-        );
-    }
+    @Nested
+    @DisplayName("Constructor Tests")
+    class ConstructorTests {
 
-    @ParameterizedTest
-    @MethodSource("validArtikelParameters")
-    void testValidConstructor(String artikelnummer, String naam, String merk,
-                              String omschrijving, boolean gratisArtikel,
-                              BigDecimal aankoopprijs, BigDecimal winstmarge,
-                              WinstmargeType winstmargeType, BigDecimal verkoopprijs,
-                              List<String> afbeeldingen) {
-        TestArtikel artikel = new TestArtikel(
-                artikelnummer, naam, merk, omschrijving, gratisArtikel,
-                aankoopprijs, winstmarge, winstmargeType, verkoopprijs, afbeeldingen
-        );
+        @ParameterizedTest
+        @CsvFileSource(resources = "/Artikel_ValidArticles.csv", numLinesToSkip = 1)
+        @DisplayName("Should create valid article")
+        void shouldCreateValidArticle(
+                String artikelnummer,
+                String naam,
+                String merk,
+                String omschrijving,
+                boolean gratisArtikel,
+                BigDecimal aankoopprijs,
+                BigDecimal winstmarge,
+                WinstmargeType type,
+                BigDecimal verkoopprijs,
+                List<String> afbeeldingen) {
 
-        assertEquals(artikelnummer, artikel.getArtikelnummer());
-        assertEquals(naam, artikel.getNaam());
-        assertEquals(merk, artikel.getMerk());
-        assertEquals(omschrijving, artikel.getOmschrijving());
-        assertEquals(gratisArtikel, artikel.isGratisArtikel());
-        assertEquals(verkoopprijs, artikel.getVerkoopprijs());
-        assertEquals(afbeeldingen, artikel.getAfbeeldingen());
-    }
+            Artikel artikel = new TestArtikel(artikelnummer,
+                                              naam,
+                                              merk,
+                                              omschrijving,
+                                              gratisArtikel,
+                                              aankoopprijs,
+                                              winstmarge,
+                                              type,
+                                              verkoopprijs,
+                                              afbeeldingen);
 
-    @Test
-    void testNullParameters() {
-        assertThrows(IllegalNullArgumentException.class, () -> new TestArtikel(
-                null, "naam", "merk", "omschrijving", false,
-                new BigDecimal("10.00"), new BigDecimal("1.5"),
-                WinstmargeType.PERCENTAGE, new BigDecimal("25.00"),
-                List.of("https://example.com/img1.jpg")
-        ));
-    }
+            assertThat(artikel.getArtikelnummer()).isEqualTo(artikelnummer);
+            assertThat(artikel.getNaam()).isEqualTo(naam);
+            assertThat(artikel.getOmschrijving()).isEqualTo(omschrijving);
+            assertThat(artikel
+                               .getPrijsComponent()
+                               .getAankoopprijs())
+                    .isEqualByComparingTo(aankoopprijs);
+            assertThat(artikel
+                               .getPrijsComponent()
+                               .getMinimaleWinstmarge())
+                    .isEqualByComparingTo(winstmarge);
+            assertThat(artikel
+                               .getPrijsComponent()
+                               .getWinstmargeType())
+                    .isEqualTo(type);
+            assertThat(artikel
+                               .getPrijsComponent()
+                               .getVerkoopprijs())
+                    .isEqualByComparingTo(verkoopprijs);
+            assertThat(artikel.getAfbeeldingen()).isEqualTo(afbeeldingen);
+        }
 
-    @Test
-    void testEmptyAfbeeldingen() {
-        assertThrows(IllegalArgumentException.class, () -> new TestArtikel(
-                "ART001", "naam", "merk", "omschrijving", false,
-                new BigDecimal("10.00"), new BigDecimal("1.5"),
-                WinstmargeType.PERCENTAGE, new BigDecimal("25.00"),
-                List.of()
-        ));
-    }
+        @ParameterizedTest
+        @ValueSource(strings = {" ", "\t", "\n", "\r", "\u0000", "\u200B"})
+        @DisplayName("Should throw exception for whitespace-only strings")
+        void shouldThrowExceptionForWhitespaceOnlyStrings(String input) {
+            assertThatThrownBy(() -> new TestArtikel(input,
+                                                     "testNaam",
+                                                     "testMerk",
+                                                     "TestOmschrijving",
+                                                     false,
+                                                     BigDecimal.TEN,
+                                                     BigDecimal.ONE,
+                                                     WinstmargeType.EURO,
+                                                     BigDecimal.valueOf(11),
+                                                     List.of("testImage.jpg")))
+                                                                            .isInstanceOf(IllegalArgumentException.class)
+                                                                            .hasMessageContaining("Verplicht veld mag niet leeg zijn");
+        }
 
-    @Test
-    void testEqualsAndHashCode() {
-        TestArtikel artikel1 = new TestArtikel(
-                "ART001", "Test", "Merk", "Omschrijving", false,
-                new BigDecimal("10.00"), new BigDecimal("1.5"),
-                WinstmargeType.PERCENTAGE, new BigDecimal("25.00"),
-                List.of("https://example.com/img1.jpg")
-        );
+        @Nested
+        @DisplayName("Price Component Tests")
+        class PriceComponentTests {
 
-        TestArtikel artikel2 = new TestArtikel(
-                "ART001", "Different", "Different", "Different", true,
-                BigDecimal.ZERO, BigDecimal.ZERO,
-                WinstmargeType.PERCENTAGE, BigDecimal.ZERO,
-                List.of("https://example.com/img2.jpg")
-        );
+            @ParameterizedTest
+            @CsvFileSource(resources = "/Artikel_PriceCalculations.csv", numLinesToSkip = 1)
+            @DisplayName("Should calculate correct sales prices")
+            void shouldCalculateCorrectSalesPrices(
+                    String artikelnummer,
+                    String naam,
+                    BigDecimal aankoopprijs,
+                    BigDecimal winstmarge,
+                    WinstmargeType type,
+                    BigDecimal expectedVerkoopprijs,
+                    BigDecimal verkoopprijs,
+                    List<String> afbeeldingen) {
 
-        TestArtikel artikel3 = new TestArtikel(
-                "ART002", "Test", "Merk", "Omschrijving", false,
-                new BigDecimal("10.00"), new BigDecimal("1.5"),
-                WinstmargeType.PERCENTAGE, new BigDecimal("25.00"),
-                List.of("https://example.com/img1.jpg")
-        );
+                Artikel artikel = new TestArtikel(artikelnummer,
+                                                  naam,
+                                                  "TestMerk",
+                                                  "Test omschrijving",
+                                                  false,
+                                                  aankoopprijs,
+                                                  winstmarge,
+                                                  type,
+                                                  verkoopprijs,
+                                                  afbeeldingen);
+                assertThat(artikel
+                                   .getPrijsComponent()
+                                   .getVerkoopprijs())
+                        .isEqualByComparingTo(expectedVerkoopprijs);
+            }
+        }
 
-        assertEquals(artikel1, artikel2);
-        assertNotEquals(artikel1, artikel3);
-        assertEquals(artikel1.hashCode(), artikel2.hashCode());
-        assertNotEquals(artikel1.hashCode(), artikel3.hashCode());
-    }
+        @Nested
+        @DisplayName("Real-world Product Tests")
+        class RealWorldProductTests {
 
-    @Test
-    void testToString() {
-        TestArtikel artikel = new TestArtikel(
-                "ART001", "Test", "Merk", "Omschrijving", false,
-                new BigDecimal("10.00"), new BigDecimal("1.5"),
-                WinstmargeType.PERCENTAGE, new BigDecimal("25.00"),
-                List.of("https://example.com/img1.jpg")
-        );
+            @ParameterizedTest
+            @CsvFileSource(resources = "/real_products.csv", numLinesToSkip = 1)
+            @DisplayName("Should create valid articles from real product data")
+            void shouldCalculateCorrectSalesPrices(
+                    String artikelnummer,
+                    String naam,
+                    String merk,
+                    String omschrijving,
+                    boolean gratisArtikel,
+                    BigDecimal aankoopprijs,
+                    BigDecimal winstmarge,
+                    WinstmargeType type,
+                    BigDecimal verkoopprijs,
+                    List<String> afbeeldingen,
+                    BigDecimal expectedVerkoopprijs) {
 
-        String expected = "TestArtikel [ART001] Merk Test - €25.00 - Omschrijving - 1 afbeelding(en)\n" +
-                          "Afbeeldingen:\n" +
-                          "  https://example.com/img1.jpg\n";
-        assertEquals(expected, artikel.toString());
-    }
+                Artikel artikel = new TestArtikel(artikelnummer,      // artikelnummer
+                                                  naam,                // naam
+                                                  merk,          // merk
+                                                  omschrijving, // omschrijving
+                                                  gratisArtikel,               // gratisArtikel
+                                                  aankoopprijs,        // aankoopprijs
+                                                  winstmarge,          // winstmarge
+                                                  type,                // type
+                                                  verkoopprijs,        // verkoopprijs
+                                                  afbeeldingen);       // afbeeldingen
 
-    @Test
-    void testKorting() {
-        TestArtikel artikel = new TestArtikel(
-                "ART001", "Test", "Merk", "Omschrijving", false,
-                new BigDecimal("10.00"), new BigDecimal("1.5"),
-                WinstmargeType.PERCENTAGE, new BigDecimal("25.00"),
-                List.of("https://example.com/img1.jpg")
-        );
+                assertThat(artikel.getPrijsComponent().getVerkoopprijs())
+                        .isEqualByComparingTo(expectedVerkoopprijs);
+            }
 
-        artikel.setKorting(new BigDecimal("20.00"), LocalDate.now().plusDays(1));
-        assertTrue(artikel.isInKorting());
-        assertEquals(new BigDecimal("20.00"), artikel.getVerkoopprijs());
+            @Test
+            @DisplayName("Should handle long product descriptions")
+            void shouldHandleLongProductDescriptions() {
+                String longDescription = "H0 DB BR 193 320-1 'Vectron' Electric Locomotive Era VI...";
 
-        artikel.stopKorting();
-        assertFalse(artikel.isInKorting());
-        assertEquals(new BigDecimal("25.00"), artikel.getVerkoopprijs());
-    }
+                Artikel artikel1 = new TestArtikel("39829",           // artikelnummer
+                                                   "Märklin BR 182",    // naam
+                                                   "Märklin",           // merk (added)
+                                                   longDescription,     // omschrijving
+                                                   false,               // gratisArtikel
+                                                   new BigDecimal("429.99"),
+                                                   new BigDecimal("70.00"),
+                                                   WinstmargeType.EURO,
+                                                   new BigDecimal("499.99"),
+                                                   List.of("39829-1.jpg", "39829-2.jpg"));
 
-    @Test
-    void testAfbeeldingen() {
-        TestArtikel artikel = new TestArtikel(
-                "ART001", "Test", "Merk", "Omschrijving", false,
-                new BigDecimal("10.00"), new BigDecimal("1.5"),
-                WinstmargeType.PERCENTAGE, new BigDecimal("25.00"),
-                List.of("https://example.com/img1.jpg")
-        );
+                assertThat(artikel1.getOmschrijving()).isEqualTo(longDescription);
+            }
 
-        assertTrue(artikel.addAfbeelding("https://example.com/img2.jpg"));
-        assertEquals(2, artikel.getAfbeeldingen().size());
-        assertTrue(artikel.removeAfbeelding("https://example.com/img2.jpg"));
-        assertEquals(1, artikel.getAfbeeldingen().size());
+            @Nested
+            @DisplayName("Equals and HashArtikelnummer Tests")
+            class EqualsAndHashArtikelnummerTests {
 
-        assertThrows(IllegalArgumentException.class, () -> artikel.addAfbeelding(null));
-        assertThrows(IllegalArgumentException.class, () -> artikel.addAfbeelding(""));
-        assertThrows(IllegalArgumentException.class, () -> artikel.removeAfbeelding("nonexistent"));
+                @Test
+                @DisplayName("Should be equal based on artikelnummer")
+                void shouldBeEqualBasedOnArtikelnummer() {
+                    Artikel artikel1 = new TestArtikel("39829",
+                                                       "Märklin BR 182",
+                                                       "TestMerk",
+                                                       "omschrijving",
+                                                       false,
+                                                       new BigDecimal("429.99"),
+                                                       new BigDecimal("70.00"),
+                                                       WinstmargeType.EURO,
+                                                       new BigDecimal("499.99"),
+                                                       List.of("39829-1.jpg"));
+
+                    Artikel artikel2 = new TestArtikel("39829",
+                                                       "Different Name",
+                                                       "TestMerk",
+                                                       "other description",
+                                                       false,
+                                                       new BigDecimal("400.00"),
+                                                       new BigDecimal("80.00"),
+                                                       WinstmargeType.PERCENTAGE,
+                                                       new BigDecimal("720.00"),
+                                                       List.of("39829-2.jpg"));
+                    assertThat(artikel1).isEqualTo(artikel2);
+                    assertThat(artikel1.hashCode()).isEqualTo(artikel2.hashCode());
+                }
+
+                private static Stream<Arguments> invalidArticleParameters() {
+                    return Stream.of(
+                            // Null checks
+                            Arguments.of(null,
+                                         // artikelnummer
+                                         "naam",
+                                         "TestMerk",
+                                         "omschrijving",
+                                         false,
+                                         BigDecimal.TEN,
+                                         BigDecimal.ONE,
+                                         WinstmargeType.EURO,
+                                         BigDecimal.valueOf(11),
+                                         List.of("test.jpg"),
+                                         "Verplicht veld mag niet null zijn"),
+
+                            Arguments.of("artikelnummer",
+                                         null,
+                                         // naam
+                                         "TestMerk",
+                                         "omschrijving",
+                                         false,
+                                         BigDecimal.TEN,
+                                         BigDecimal.ONE,
+                                         WinstmargeType.EURO,
+                                         BigDecimal.valueOf(11),
+                                         List.of("test.jpg"),
+                                         "Verplicht veld mag niet null zijn"),
+
+                            // Blank checks
+                            Arguments.of("",
+                                         // artikelnummer
+                                         "naam",
+                                         "TestMerk",
+                                         "omschrijving",
+                                         false,
+                                         BigDecimal.TEN,
+                                         BigDecimal.ONE,
+                                         WinstmargeType.EURO,
+                                         BigDecimal.valueOf(11),
+                                         List.of("test.jpg"),
+                                         "Verplicht veld mag niet leeg zijn"),
+
+                            // Invalid prices
+                            Arguments.of("artikelnummer",
+                                         "naam",
+                                         "TestMerk",
+                                         "omschrijving",
+                                         false,
+                                         BigDecimal.ZERO,
+                                         // aankoopprijs
+                                         BigDecimal.ONE,
+                                         WinstmargeType.EURO,
+                                         BigDecimal.valueOf(11),
+                                         List.of("test.jpg"),
+                                         "Prijs moet positief zijn"),
+
+                            Arguments.of("artikelnummer",
+                                         "naam",
+                                         "TestMerk",
+                                         "omschrijving",
+                                         false,
+                                         BigDecimal.TEN,
+                                         BigDecimal.ZERO,
+                                         // winstmarge
+                                         WinstmargeType.EURO,
+                                         BigDecimal.valueOf(11),
+                                         List.of("test.jpg"),
+                                         "Winstmarge moet positief zijn")
+                                    );
+                }
+            }
+        }
     }
 }

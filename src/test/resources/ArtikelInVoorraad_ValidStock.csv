@@ -1,0 +1,5 @@
+artikelnummer,naam,merk,omschrijving,gratisArtikel,aankoopprijs,winstmarge,winstmargeType,verkoopprijs,afbeeldingen,voorraad
+73916,BR 193 Vectron DB AG,Roco,DB BR 193 Electric Locomotive Era VI,false,259.99,40.00,PERCENTAGE,363.99,73916-1.jpg;73916-2.jpg,10
+71400,ICE 4 Basisset,PIKO,DB AG ICE 4 7-delig treinstel,false,399.99,50.00,EURO,449.99,71400.jpg,5
+88487,Mini-Club BR 101,Märklin,Z-schaal elektrische locomotief,false,189.99,30.00,PERCENTAGE,246.99,88487-1.jpg;88487-2.jpg,15
+99999,Catalogus 2024,Märklin,Märklin volledige catalogus 2024,true,0.00,0.00,PERCENTAGE,0.00,catalog.jpg,100

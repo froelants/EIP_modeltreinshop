@@ -1,0 +1,5 @@
+verwachteDatum,aantal,expectedMessage
+,5,Verwachte datum moet na besteldatum liggen
+2023-10-10,5,Verwachte datum moet na besteldatum liggen
+2023-10-15,0,Aantal moet positief zijn
+2023-10-15,-1,Aantal moet positief zijn

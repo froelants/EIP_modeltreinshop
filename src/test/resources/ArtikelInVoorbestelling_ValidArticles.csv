@@ -1,0 +1,4 @@
+artikelnummer,naam,merk,omschrijving,gratisArtikel,aankoopprijs,winstmarge,winstmargeType,verkoopprijs,afbeeldingen,leverDatum,minimumAantal,voorbestellingen
+43660,ESU V60,ESU,DB V60 Digital+Sound,false,449.99,55.00,PERCENTAGE,697.49,43660-1.jpg;43660-2.jpg,2024-09-30,10,5
+73903,NS 1700,Roco,NS 1700 Elektrolok,false,289.99,40.00,EURO,329.99,73903.jpg,2024-08-15,15,8
+39829,ICE 3,Märklin,DB ICE 3 BR 407,false,599.99,60.00,PERCENTAGE,959.99,39829-1.jpg;39829-2.jpg,2024-10-31,20,12

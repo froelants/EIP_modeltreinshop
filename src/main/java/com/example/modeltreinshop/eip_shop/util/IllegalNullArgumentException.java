@@ -8,7 +8,8 @@ public class IllegalNullArgumentException extends IllegalArgumentException {
         super(s);
     }
 
-    public IllegalNullArgumentException(String message, Throwable cause) {
+    public IllegalNullArgumentException(String message,
+                                        Throwable cause) {
         super(message, cause);
     }
 

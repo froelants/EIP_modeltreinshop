@@ -1,0 +1,11 @@
+artikelnummer,naam,omschrijving,aankoopprijs,winstmarge,type,voorraad,minimaleVoorraad,normaleVoorraad,minimaleBestelhoeveelheid,expectedMessage
+,Märklin BR 182,Electric Locomotive,429.99,70.00,EURO,5,2,10,1,Artikelnummer mag niet null zijn
+39829,,Electric Locomotive,429.99,70.00,EURO,5,2,10,1,Naam mag niet leeg zijn
+39829,Märklin BR 182,,429.99,70.00,EURO,5,2,10,1,Omschrijving mag niet null zijn
+39829,Märklin BR 182,Electric Locomotive,,70.00,EURO,5,2,10,1,Aankoopprijs mag niet null zijn
+39829,Märklin BR 182,Electric Locomotive,429.99,,EURO,5,2,10,1,Winstmarge mag niet null zijn
+39829,Märklin BR 182,Electric Locomotive,429.99,70.00,,5,2,10,1,WinstmargeType mag niet null zijn
+39829,Märklin BR 182,Electric Locomotive,429.99,70.00,EURO,-1,2,10,1,Voorraad mag niet negatief zijn
+39829,Märklin BR 182,Electric Locomotive,429.99,70.00,EURO,5,-1,10,1,Minimale voorraad mag niet negatief zijn
+39829,Märklin BR 182,Electric Locomotive,429.99,70.00,EURO,5,2,0,1,Normale voorraad moet groter zijn dan minimale voorraad
+39829,Märklin BR 182,Electric Locomotive,429.99,70.00,EURO,5,2,10,0,Minimale bestelhoeveelheid moet positief zijn

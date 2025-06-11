@@ -1,141 +1,213 @@
 package com.example.modeltreinshop.eip_shop.producten;
 
-import com.example.modeltreinshop.eip_shop.producten.model.Artikel;
-import com.example.modeltreinshop.eip_shop.producten.model.ArtikelDecorator;
-import com.example.modeltreinshop.eip_shop.producten.model.PrijsComponent;
-import com.example.modeltreinshop.eip_shop.producten.model.WinstmargeType;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.List;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.ArrayList;
 
-public class ArtikelInVoorbestelling extends ArtikelDecorator {
-    private final PrijsComponent prijsComponent;
-    private boolean inVoorbestelling;
-    private BigDecimal prijsInVoorbestelling;
-    private LocalDate inVoorbestellingTotDatum;
+/*
+ 2025/05/27 12:00
+ */
+/**
+ * ArtikelInVoorbestelling vertegenwoordigt een artikel dat kan worden voorbesteld.
+ *
+ * Business Logic:
+ * 1. Een artikel kan een leveringstijd (kwartaal) hebben of niet:
+ *    - Met leveringstijd: heeft voorbestelprijs en voorschot
+ *    - Zonder leveringstijd: geen voorschot mogelijk (altijd 0 euro)
+ *
+ * 2. Voorbestelling is mogelijk:
+ *    - Tot de voorbestellingTotDatum
+ *    - Zolang het maximaal aantal voorbestellingen niet is bereikt (indien ingesteld)
+ *
+ * 3. Na voorbestellingTotDatum maar voor levering:
+ *    - Artikel kan nog gereserveerd worden
+ *    - Niet meer tegen voorbestelprijs
+ *    - Wordt dan een ArtikelInVoorraad (conversie gebeurt buiten deze class)
+ *    - Voorbestellingsprijs wordt de verkoopprijs
+ *    - Voorbestelling aan de voorbestelPrijs is mogelijk tot en met de voorbestellingTotDatum
+ *
+ * 4. Voorschot:
+ *    - Alleen mogelijk bij artikelen met leveringskwartaal
+ *    - Voorgestelde waarde kan later aangepast worden
+ *    - Bij artikelen zonder leveringskwartaal altijd 0 euro
+ *
+ * 5. Aantal in voorbestelling:
+ *    - Start op 0
+ *    - Wordt later ingesteld (aantal voorbestellingen + reserve)
+ *    - Bijhouden van voorbestellingen gebeurt buiten deze class
+ *    - Voorbestellingen zonder leveringskwartaal kunnen door de klant worden ongedaangemaakt (wordt buiten deze class afgehandeld.)
+ *    - Maximum aantal artikelen in is optioneel
+ */
+public class ArtikelInVoorbestelling extends Artikel {
+    private final LocalDate besteldatum;
+    private BigDecimal voorbestellingsPrijs;
+    private LocalDate voorbestellingTotDatum;
     private YearMonth leveringsKwartaal;
-    private boolean onbekendeLeveringstijd;
+    private BigDecimal voorschot;
+    private boolean zonderLeveringstijd;
+    private int aantalInVoorbestelling;
+    private Integer maximaalAantalVoorbestellingen;
 
+    public ArtikelInVoorbestelling(String artikelnummer,
+                                   String naam,
+                                   String merk,
+                                   String omschrijving,
+                                   boolean gratisArtikel,
+                                   BigDecimal aankoopprijs,
+                                   BigDecimal winstmarge,
+                                   WinstmargeType winstmargeType,
+                                   BigDecimal verkoopprijs,
+                                   List<String> afbeeldingen,
+                                   LocalDate besteldatum,
+                                   BigDecimal voorbestellingsPrijs,
+                                   LocalDate voorbestellingTotDatum,
+                                   YearMonth leveringsKwartaal,
+                                   BigDecimal voorschot,
+                                   boolean zonderLeveringstijd) {
+        super(artikelnummer, naam, merk, omschrijving, gratisArtikel,
+              aankoopprijs, winstmarge, winstmargeType, verkoopprijs,
+              afbeeldingen);
 
-    public ArtikelInVoorbestelling(Artikel artikel, BigDecimal aankoopprijs,
-                                   BigDecimal minimaleWinstmarge, WinstmargeType winstmargeType,
-                                   BigDecimal prijsInVoorbestelling, LocalDate inVoorbestellingTotDatum,
-                                   YearMonth leveringsKwartaal, boolean onbekendeLeveringstijd
-    ) {
-        super(artikel);
+        List<String> errors = validateVoorbestellingParameters(
+                besteldatum, voorbestellingsPrijs, voorbestellingTotDatum,
+                leveringsKwartaal, voorschot, zonderLeveringstijd
+                                                              );
 
-        this.prijsComponent = new PrijsComponent(aankoopprijs, minimaleWinstmarge, winstmargeType);
-        valideerVoorbestellingsParameters(prijsInVoorbestelling,
-                                          inVoorbestellingTotDatum, leveringsKwartaal);
+        if (!errors.isEmpty()) {
+            throw new IllegalArgumentException(String.join("; ", errors));
+        }
 
-        this.prijsInVoorbestelling = prijsInVoorbestelling.setScale(2);
-        this.inVoorbestellingTotDatum = inVoorbestellingTotDatum;
+        this.besteldatum = besteldatum;
+        this.voorbestellingsPrijs = voorbestellingsPrijs;
+        this.voorbestellingTotDatum = voorbestellingTotDatum;
         this.leveringsKwartaal = leveringsKwartaal;
-        this.inVoorbestelling = true;
-        updateVoorbestellingStatus();
+        this.voorschot = zonderLeveringstijd ? BigDecimal.ZERO : voorschot;
+        this.zonderLeveringstijd = zonderLeveringstijd;
+        this.aantalInVoorbestelling = 0;
+        this.maximaalAantalVoorbestellingen = null;
     }
 
-    public ArtikelInVoorbestelling(Artikel artikel, BigDecimal aankoopprijs,
-                                   BigDecimal minimaleWinstmarge, WinstmargeType winstmargeType,
-                                   BigDecimal prijsInVoorbestelling, LocalDate inVoorbestellingTotDatum,
-                                   YearMonth leveringsKwartaal) {
-        this(artikel, aankoopprijs, minimaleWinstmarge, winstmargeType,
-             prijsInVoorbestelling, inVoorbestellingTotDatum, leveringsKwartaal, false);
+    private List<String> validateVoorbestellingParameters(
+            LocalDate besteldatum,
+            BigDecimal voorbestellingsPrijs,
+            LocalDate voorbestellingTotDatum,
+            YearMonth leveringsKwartaal,
+            BigDecimal voorschot,
+            boolean zonderLeveringstijd) {
+
+        List<String> errors = new ArrayList<>();
+
+        if (besteldatum == null) {
+            errors.add("Besteldatum mag niet null zijn");
+        }
+        if (voorbestellingsPrijs == null || voorbestellingsPrijs.compareTo(getMinimaleVerkoopprijs()) < 0) {
+            errors.add("Voorbestellingsprijs moet hoger zijn dan minimale verkoopprijs");
+        }
+        if (voorbestellingTotDatum == null ||
+            (besteldatum != null && voorbestellingTotDatum.isBefore(besteldatum))) {
+            errors.add("Voorbestelling einddatum moet na besteldatum liggen");
+        }
+        if (!zonderLeveringstijd && leveringsKwartaal == null) {
+            errors.add("Leveringskwartaal is verplicht als er een leveringstijd is");
+        }
+        if (voorschot == null || voorschot.compareTo(BigDecimal.ZERO) < 0) {
+            errors.add("Voorschot mag niet negatief zijn");
+        }
+
+        return errors;
     }
 
-
-    private void valideerVoorbestellingsParameters(BigDecimal prijsInVoorbestelling,
-                                                   LocalDate inVoorbestellingTotDatum, YearMonth leveringsKwartaal) {
-        if (prijsInVoorbestelling == null || inVoorbestellingTotDatum == null ||
-            leveringsKwartaal == null) {
-            throw new IllegalArgumentException("Voorbestellings parameters mogen niet null zijn");
-        }
-        if (prijsInVoorbestelling.compareTo(prijsComponent.getAankoopprijs()) <= 0) {
-            throw new IllegalArgumentException(
-                    "Prijs in voorbestelling moet groter zijn dan de aankoopprijs");
-        }
-        if (inVoorbestellingTotDatum.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException(
-                    "Einddatum voorbestelling moet in de toekomst liggen");
-        }
-        if (leveringsKwartaal.isBefore(YearMonth.now())) {
-            throw new IllegalArgumentException("Leveringskwartaal moet in de toekomst liggen");
-        }
-    }
-
+    @Override
     public BigDecimal getVerkoopprijs() {
-        updateVoorbestellingStatus();
-        return inVoorbestelling ? prijsInVoorbestelling : prijsComponent.berekenVerkoopprijs();
+        return isVoorbestellingMogelijk() ? voorbestellingsPrijs : super.getVerkoopprijs();
     }
 
-    public boolean isInVoorbestelling() {
-        updateVoorbestellingStatus();
-        return inVoorbestelling;
+    public boolean isVoorbestellingMogelijk() {
+        return LocalDate.now().isBefore(voorbestellingTotDatum) &&
+               (maximaalAantalVoorbestellingen == null ||
+                aantalInVoorbestelling < maximaalAantalVoorbestellingen);
     }
 
-    private void updateVoorbestellingStatus() {
-        if (inVoorbestelling && inVoorbestellingTotDatum.isBefore(LocalDate.now())) {
-            stopVoorbestelling();
+    // Getters
+    public LocalDate getBesteldatum() { return besteldatum; }
+    public BigDecimal getVoorbestellingsPrijs() { return voorbestellingsPrijs; }
+    public LocalDate getVoorbestellingTotDatum() { return voorbestellingTotDatum; }
+    public boolean isZonderLeveringstijd() { return zonderLeveringstijd; }
+    public YearMonth getLeveringsKwartaal() {
+        return zonderLeveringstijd ? null : leveringsKwartaal;
+    }
+    public BigDecimal getVoorschot() { return voorschot; }
+    public int getAantalInVoorbestelling() { return aantalInVoorbestelling; }
+    public Integer getMaximaalAantalVoorbestellingen() { return maximaalAantalVoorbestellingen; }
+
+    // Setters
+    public void setVoorbestellingTotDatum(LocalDate voorbestellingTotDatum) {
+        if (voorbestellingTotDatum == null) {
+            throw new IllegalArgumentException("Voorbestellingsdatum mag niet null zijn");
+        }
+        if (voorbestellingTotDatum.isBefore(besteldatum)) {
+            throw new IllegalArgumentException("Voorbestellingsdatum moet na besteldatum liggen");
+        }
+        this.voorbestellingTotDatum = voorbestellingTotDatum;
+    }
+
+    public void setVoorbestellingsPrijs(BigDecimal voorbestellingsPrijs) {
+        if (voorbestellingsPrijs == null ||
+            voorbestellingsPrijs.compareTo(getMinimaleVerkoopprijs()) < 0) {
+            throw new IllegalArgumentException("Voorbestellingsprijs moet hoger zijn dan minimale verkoopprijs");
+        }
+        this.voorbestellingsPrijs = voorbestellingsPrijs;
+    }
+
+    public void setVoorschot(BigDecimal voorschot) {
+        if (zonderLeveringstijd) {
+            this.voorschot = BigDecimal.ZERO;
+        } else {
+            if (voorschot == null || voorschot.compareTo(BigDecimal.ZERO) < 0) {
+                throw new IllegalArgumentException("Voorschot mag niet negatief zijn");
+            }
+            this.voorschot = voorschot;
         }
     }
 
-    public void stopVoorbestelling() {
-        this.inVoorbestelling = false;
-        this.prijsInVoorbestelling = null;
-        this.inVoorbestellingTotDatum = null;
-        this.leveringsKwartaal = null;
+    public void setAantalInVoorbestelling(int aantal) {
+        if (aantal < 0) {
+            throw new IllegalArgumentException("Aantal in voorbestelling mag niet negatief zijn");
+        }
+        this.aantalInVoorbestelling = aantal;
     }
 
-    public void startVoorbestelling(BigDecimal prijsInVoorbestelling,
-                                    LocalDate inVoorbestellingTotDatum, YearMonth leveringsKwartaal) {
-        valideerVoorbestellingsParameters(prijsInVoorbestelling,
-                                          inVoorbestellingTotDatum, leveringsKwartaal);
-
-        this.prijsInVoorbestelling = prijsInVoorbestelling.setScale(2);
-        this.inVoorbestellingTotDatum = inVoorbestellingTotDatum;
-        this.leveringsKwartaal = leveringsKwartaal;
-        this.inVoorbestelling = true;
-    }
-
-    public BigDecimal getPrijsInVoorbestelling() {
-        updateVoorbestellingStatus();
-        return inVoorbestelling ? prijsInVoorbestelling : null;
-    }
-
-    public LocalDate getInVoorbestellingTotDatum() {
-        updateVoorbestellingStatus();
-        return inVoorbestelling ? inVoorbestellingTotDatum : null;
-    }
-
-    public YearMonth getLeveringsKwartaal() {
-        updateVoorbestellingStatus();
-        return inVoorbestelling ? leveringsKwartaal : null;
-    }
-
-    public int getLeveringsKwartaalNummer() {
-        updateVoorbestellingStatus();
-        return inVoorbestelling ? ((leveringsKwartaal.getMonthValue() - 1) / 3) + 1 : 0;
-    }
-
-    public boolean heeftOnbekendeLeveringstijd() {
-        return onbekendeLeveringstijd;
-    }
-
-    public void setOnbekendeLeveringstijd(boolean onbekendeLeveringstijd) {
-        this.onbekendeLeveringstijd = onbekendeLeveringstijd;
+    public void setMaximaalAantalVoorbestellingen(Integer maximum) {
+        if (maximum != null && maximum <= 0) {
+            throw new IllegalArgumentException("Maximaal aantal voorbestellingen moet positief zijn");
+        }
+        this.maximaalAantalVoorbestellingen = maximum;
     }
 
     @Override
     public String toString() {
-        updateVoorbestellingStatus();
-        if (!inVoorbestelling) {
-            return super.toString();
+        StringBuilder sb = new StringBuilder(super.toString());
+        sb.append("\nVoorbestelling details:");
+        sb.append(String.format("\n  Besteldatum: %s", besteldatum));
+        sb.append(String.format("\n  Voorbestellingsprijs: € %.2f", voorbestellingsPrijs));
+        sb.append(String.format("\n  Voorbestelling mogelijk tot: %s", voorbestellingTotDatum));
+        sb.append(String.format("\n  Aantal in voorbestelling: %d", aantalInVoorbestelling));
+        if (maximaalAantalVoorbestellingen != null) {
+            sb.append(String.format("\n  Maximum aantal: %d", maximaalAantalVoorbestellingen));
         }
-        return super.toString() + " (In voorbestelling tot " + inVoorbestellingTotDatum +
-               ", prijs: " + prijsInVoorbestelling +
-               ", leverbaar in Q" + getLeveringsKwartaalNummer() +
-               " " + leveringsKwartaal.getYear() + ")";
+        if (zonderLeveringstijd) {
+            sb.append("\n  Zonder leveringstijd");
+            sb.append("\n  Voorschot: € 0.00");
+        } else {
+            sb.append(String.format("\n  Verwachte levering: %s", leveringsKwartaal));
+            sb.append(String.format("\n  Voorschot: € %.2f", voorschot));
+        }
+        return sb.toString();
     }
-
 }

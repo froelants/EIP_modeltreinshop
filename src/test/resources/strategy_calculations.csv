@@ -1,0 +1,6 @@
+purchasePrice,euroMargin,percentageMargin,expectedEuroPrice,expectedPercentagePrice
+89.99,10.00,25.00,99.99,112.49
+174.49,25.50,15.00,199.99,200.66
+249.99,50.00,20.00,299.99,299.99
+399.99,100.00,25.00,499.99,499.99
+199.99,0.00,0.00,199.99,199.99
