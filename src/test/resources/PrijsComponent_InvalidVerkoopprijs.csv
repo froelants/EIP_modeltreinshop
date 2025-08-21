@@ -1,0 +1,4 @@
+aankoopprijs,minimaleWinstmarge,type,verkoopprijs,expectedError
+199.99,25.00,EURO,199.98,Verkoopprijs moet groter zijn dan minimale verkoopprijs
+449.99,50.00,EURO,449.98,Verkoopprijs moet groter zijn dan minimale verkoopprijs
+899.99,20.00,PERCENTAGE,899.98,Verkoopprijs moet groter zijn dan minimale verkoopprijs

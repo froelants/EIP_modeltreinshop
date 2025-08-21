@@ -1,4 +1,16 @@
-artikelnummer,naam,merk,omschrijving,gratisArtikel,aankoopprijs,winstmarge,winstmargeType,verkoopprijs,afbeeldingen,eindDatum
-73141,Roco NS 1200,Roco,Nederlandse elektrische locomotief NS 1200 blauw,false,199.99,25.00,PERCENTAGE,249.99,73141-1.jpg;73141-2.jpg,2024-12-31
-60216,PIKO BR 147,PIKO,Elektrische locomotief BR 147 DB Cargo,false,289.99,50.00,EURO,339.99,60216.jpg,2024-06-30
-39829,Märklin BR 182,Märklin,H0 DB BR 193 320-1 'Vectron',false,429.99,70.00,EURO,499.99,39829-1.jpg;39829-2.jpg,2025-01-31
+artikelnummer,naam,merk,omschrijving,gratisArtikel,aankoopprijs,winstmarge,winstmargeType,verkoopprijs,afbeeldingen,voorraad,minimaleVoorraad,normaleVoorraad,minimaleBestelhoeveelheid
+73141,BR 01.10 Dampflok,Roco,DB BR 01.10 Sound,false,449.99,50.00,PERCENTAGE,674.99,73141-1.jpg;73141-2.jpg,8,10,25,5
+43279,ICE 4 Basisset,Märklin,DB ICE 4 7-teilig,false,599.99,45.00,PERCENTAGE,869.99,43279.jpg,15,12,30,6
+72120,NS 1200 Blauw,Roco,NS 1200 Epoche IV DC Sound,false,299.99,40.00,PERCENTAGE,419.99,72120.jpg,5,8,20,4
+78755,TRAXX BR 186,Piko,DB Cargo TRAXX BR 186 DC,false,189.99,35.00,PERCENTAGE,256.49,78755.jpg,3,5,15,5
+71403,NS Plan V,Piko,NS Plan V Geel DC Sound,false,249.99,45.00,PERCENTAGE,362.49,71403.jpg,12,10,20,5
+73801,Re 465 SBB,Roco,SBB Re 465 Cargo AC Sound,false,379.99,40.00,PERCENTAGE,531.99,73801.jpg,7,10,25,5
+58672,DR VT 18.16,Piko,DR VT 18.16 SVT 175 DC,false,549.99,50.00,PERCENTAGE,824.99,58672.jpg,20,15,35,10
+73901,BR 103,Roco,DB BR 103 TEE AC Sound,false,399.99,45.00,PERCENTAGE,579.99,73901.jpg,4,8,20,4
+72233,NS 2200,Roco,NS 2200 Geel/Grijs DC,false,219.99,40.00,PERCENTAGE,307.99,72233.jpg,6,5,15,5
+73456,BR 218,Märklin,DB BR 218 Rot AC Sound,false,329.99,35.00,PERCENTAGE,445.49,73456.jpg,9,10,25,5
+74123,SNCF CC 40100,Roco,SNCF CC 40100 DC Sound,false,459.99,50.00,PERCENTAGE,689.99,74123.jpg,2,5,15,5
+71999,NS ICM,Piko,NS ICM-III Geel/Blauw DC,false,289.99,45.00,PERCENTAGE,420.49,71999.jpg,18,15,30,8
+76543,SBB Re 4/4 II,Märklin,SBB Re 4/4 II AC Sound,false,369.99,40.00,PERCENTAGE,517.99,76543.jpg,11,10,25,5
+75321,ÖBB 1216,Roco,ÖBB 1216 Railjet DC,false,279.99,35.00,PERCENTAGE,377.99,75321.jpg,13,10,20,5
+77777,BR 101,Märklin,DB BR 101 AC Sound,false,419.99,45.00,PERCENTAGE,609.49,77777.jpg,16,15,35,10

@@ -1,0 +1,16 @@
+voorraad,minimaleVoorraad,normaleVoorraad,minimaleBestelhoeveelheid,expectedError
+-1,5,20,5,Voorraad mag niet negatief zijn
+8,0,20,5,Minimale voorraad moet positief zijn
+8,10,8,5,Normale voorraad moet groter zijn dan minimale voorraad
+8,5,20,0,Minimale bestelhoeveelheid moet positief zijn
+0,5,20,5,Voorraad mag niet negatief zijn
+8,-1,20,5,Minimale voorraad moet positief zijn
+8,5,15,-1,Minimale bestelhoeveelheid moet positief zijn
+8,15,10,5,Normale voorraad moet groter zijn dan minimale voorraad
+-5,0,10,0,Voorraad mag niet negatief zijn
+8,25,20,5,Normale voorraad moet groter zijn dan minimale voorraad
+8,5,5,5,Normale voorraad moet groter zijn dan minimale voorraad
+-2,30,25,8,Voorraad mag niet negatief zijn
+8,35,30,0,Minimale bestelhoeveelheid moet positief zijn
+8,40,35,-2,Minimale bestelhoeveelheid moet positief zijn
+8,20,15,5,Normale voorraad moet groter zijn dan minimale voorraad
