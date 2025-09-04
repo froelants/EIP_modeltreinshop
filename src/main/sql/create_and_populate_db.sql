@@ -4,10 +4,9 @@ DROP DATABASE IF EXISTS `modeltreinshop`;
 CREATE DATABASE `modeltreinshop`;
 USE `modeltreinshop`;
 
--- Create Artikel table with SINGLE_TABLE inheritance
+-- Create superclass table
 CREATE TABLE `artikel` (
                            `artikelnummer` VARCHAR(255) NOT NULL,
-                           `artikel_type` VARCHAR(31) NOT NULL,
                            `naam` VARCHAR(255) NOT NULL,
                            `merk` VARCHAR(255) NOT NULL,
                            `omschrijving` TEXT NOT NULL,
@@ -18,27 +17,49 @@ CREATE TABLE `artikel` (
                            `minimale_winstmarge` DECIMAL(19, 2) NOT NULL,
                            `verkoopprijs` DECIMAL(19, 2) NOT NULL,
                            `winstmarge_type` VARCHAR(255) NOT NULL,
-    -- ArtikelInVoorraad fields
-                           `voorraad` INT,
-                           `laatste_aankoopdatum` DATE,
-    -- CourantArtikel fields
-                           `minimale_voorraad` INT,
-                           `normale_voorraad` INT,
-                           `minimale_bestelhoeveelheid` INT,
-    -- ArtikelInBackorder fields
-                           `besteldatum` DATE,
-                           `next_backorder_id` INT,
-    -- ArtikelInVoorbestelling fields
-                           `voorbestellings_prijs` DECIMAL(19, 2),
-                           `voorbestelling_tot_datum` DATE,
-                           `leverings_kwartaal` VARCHAR(255),
-                           `voorschot` DECIMAL(19, 2),
-                           `zonder_leveringstijd` BIT(1),
-                           `aantal_in_voorbestelling` INT,
-                           `maximaal_aantal_voorbestellingen` INT,
                            PRIMARY KEY (`artikelnummer`)
 );
 
+-- Create subclass tables, referencing the superclass
+CREATE TABLE `artikel_in_voorraad` (
+                                       `artikelnummer` VARCHAR(255) NOT NULL,
+                                       `voorraad` INT,
+                                       `laatste_aankoopdatum` DATE,
+                                       PRIMARY KEY (`artikelnummer`),
+                                       FOREIGN KEY (`artikelnummer`) REFERENCES `artikel`(`artikelnummer`)
+);
+
+CREATE TABLE `courant_artikel` (
+                                   `artikelnummer` VARCHAR(255) NOT NULL,
+                                   `minimale_voorraad` INT,
+                                   `normale_voorraad` INT,
+                                   `minimale_bestelhoeveelheid` INT,
+                                   PRIMARY KEY (`artikelnummer`),
+                                   FOREIGN KEY (`artikelnummer`) REFERENCES `artikel_in_voorraad`(`artikelnummer`)
+);
+
+CREATE TABLE `artikel_in_backorder` (
+                                        `artikelnummer` VARCHAR(255) NOT NULL,
+                                        `besteldatum` DATE,
+                                        `next_backorder_id` INT,
+                                        PRIMARY KEY (`artikelnummer`),
+                                        FOREIGN KEY (`artikelnummer`) REFERENCES `courant_artikel`(`artikelnummer`)
+);
+
+CREATE TABLE `artikel_in_voorbestelling` (
+                                             `artikelnummer` VARCHAR(255) NOT NULL,
+                                             `voorbestellings_prijs` DECIMAL(19, 2),
+                                             `voorbestelling_tot_datum` DATE,
+                                             `leverings_kwartaal` VARCHAR(255),
+                                             `voorschot` DECIMAL(19, 2),
+                                             `zonder_leveringstijd` BIT(1),
+                                             `aantal_in_voorbestelling` INT,
+                                             `maximaal_aantal_voorbestellingen` INT,
+                                             PRIMARY KEY (`artikelnummer`),
+                                             FOREIGN KEY (`artikelnummer`) REFERENCES `artikel`(`artikelnummer`)
+);
+
+-- Auxiliary tables
 CREATE TABLE `artikel_afbeeldingen` (
                                         `artikelnummer` VARCHAR(255) NOT NULL,
                                         `afbeelding_url` VARCHAR(255)
@@ -58,39 +79,72 @@ ALTER TABLE `artikel_afbeeldingen` ADD CONSTRAINT `FK_artikel_afbeeldingen_artik
 ALTER TABLE `backorder_lijn` ADD CONSTRAINT `FK_backorder_lijn_artikel` FOREIGN KEY (`artikel_artikelnummer`) REFERENCES `artikel`(`artikelnummer`);
 
 -- Insert data into `artikel` table
-INSERT INTO `artikel` (`artikelnummer`, `artikel_type`, `naam`, `merk`, `omschrijving`, `is_gratis_artikel`, `aankoopprijs`, `minimale_winstmarge`, `verkoopprijs`, `winstmarge_type`, `voorraad`, `laatste_aankoopdatum`, `minimale_voorraad`, `normale_voorraad`, `minimale_bestelhoeveelheid`, `besteldatum`, `next_backorder_id`, `voorbestellings_prijs`, `voorbestelling_tot_datum`, `leverings_kwartaal`, `voorschot`, `zonder_leveringstijd`, `aantal_in_voorbestelling`, `maximaal_aantal_voorbestellingen`)
+INSERT INTO `artikel` (`artikelnummer`, `naam`, `merk`, `omschrijving`, `is_gratis_artikel`, `aankoopprijs`, `minimale_winstmarge`, `verkoopprijs`, `winstmarge_type`, `kortings_prijs`, `korting_tot_datum`)
 VALUES
--- Courant artikelen
-('73141', 'COURANT', 'BR 01.10 Dampflok', 'Roco', 'DB BR 01.10 Sound', FALSE, 449.99, 50.00, 674.99, 'PERCENTAGE', 8, '2025-08-21', 10, 25, 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('43279', 'COURANT', 'ICE 4 Basisset', 'Märklin', 'DB ICE 4 7-teilig', FALSE, 599.99, 45.00, 869.99, 'PERCENTAGE', 15, '2025-08-21', 12, 30, 6, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('72120', 'COURANT', 'NS 1200 Blauw', 'Roco', 'NS 1200 Epoche IV DC Sound', FALSE, 299.99, 40.00, 419.99, 'PERCENTAGE', 5, '2025-08-21', 8, 20, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('78755', 'COURANT', 'TRAXX BR 186', 'Piko', 'DB Cargo TRAXX BR 186 DC', FALSE, 189.99, 35.00, 256.49, 'PERCENTAGE', 3, '2025-08-21', 5, 15, 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('71403', 'COURANT', 'NS Plan V', 'Piko', 'NS Plan V Geel DC Sound', FALSE, 249.99, 45.00, 362.49, 'PERCENTAGE', 12, '2025-08-21', 10, 20, 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('73801', 'COURANT', 'Re 465 SBB', 'Roco', 'SBB Re 465 Cargo AC Sound', FALSE, 379.99, 40.00, 531.99, 'PERCENTAGE', 7, '2025-08-21', 10, 25, 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('58672', 'COURANT', 'DR VT 18.16', 'Piko', 'DR VT 18.16 SVT 175 DC', FALSE, 549.99, 50.00, 824.99, 'PERCENTAGE', 20, '2025-08-21', 15, 35, 10, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('73901', 'COURANT', 'BR 103', 'Roco', 'DB BR 103 TEE AC Sound', FALSE, 399.99, 45.00, 579.99, 'PERCENTAGE', 4, '2025-08-21', 8, 20, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('72233', 'COURANT', 'NS 2200', 'Roco', 'NS 2200 Geel/Grijs DC', FALSE, 219.99, 40.00, 307.99, 'PERCENTAGE', 6, '2025-08-21', 5, 15, 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('73456', 'COURANT', 'BR 218', 'Märklin', 'DB BR 218 Rot AC Sound', FALSE, 329.99, 35.00, 445.49, 'PERCENTAGE', 9, '2025-08-21', 10, 25, 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('74123', 'COURANT', 'SNCF CC 40100', 'Roco', 'SNCF CC 40100 DC Sound', FALSE, 459.99, 50.00, 689.99, 'PERCENTAGE', 2, '2025-08-21', 5, 15, 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('71999', 'COURANT', 'NS ICM', 'Piko', 'NS ICM-III Geel/Blauw DC', FALSE, 289.99, 45.00, 420.49, 'PERCENTAGE', 18, '2025-08-21', 15, 30, 8, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('76543', 'COURANT', 'SBB Re 4/4 II', 'Märklin', 'SBB Re 4/4 II AC Sound', FALSE, 369.99, 40.00, 517.99, 'PERCENTAGE', 11, '2025-08-21', 10, 25, 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('75321', 'COURANT', 'ÖBB 1216', 'Roco', 'ÖBB 1216 Railjet DC', FALSE, 279.99, 35.00, 377.99, 'PERCENTAGE', 13, '2025-08-21', 10, 20, 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('77777', 'COURANT', 'BR 101', 'Märklin', 'DB BR 101 AC Sound', FALSE, 419.99, 45.00, 609.49, 'PERCENTAGE', 16, '2025-08-21', 15, 35, 10, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('73141', 'BR 01.10 Dampflok', 'Roco', 'DB BR 01.10 Sound', FALSE, 449.99, 50.00, 674.99, 'PERCENTAGE', NULL, NULL),
+    ('43279', 'ICE 4 Basisset', 'Märklin', 'DB ICE 4 7-teilig', FALSE, 599.99, 45.00, 869.99, 'PERCENTAGE', NULL, NULL),
+    ('72120', 'NS 1200 Blauw', 'Roco', 'NS 1200 Epoche IV DC Sound', FALSE, 299.99, 40.00, 419.99, 'PERCENTAGE', NULL, NULL),
+    ('78755', 'TRAXX BR 186', 'Piko', 'DB Cargo TRAXX BR 186 DC', FALSE, 189.99, 35.00, 256.49, 'PERCENTAGE', NULL, NULL),
+    ('71403', 'NS Plan V', 'Piko', 'NS Plan V Geel DC Sound', FALSE, 249.99, 45.00, 362.49, 'PERCENTAGE', NULL, NULL),
+    ('73801', 'Re 465 SBB', 'Roco', 'SBB Re 465 Cargo AC Sound', FALSE, 379.99, 40.00, 531.99, 'PERCENTAGE', NULL, NULL),
+    ('58672', 'DR VT 18.16', 'Piko', 'DR VT 18.16 SVT 175 DC', FALSE, 549.99, 50.00, 824.99, 'PERCENTAGE', NULL, NULL),
+    ('73901', 'BR 103', 'Roco', 'DB BR 103 TEE AC Sound', FALSE, 399.99, 45.00, 579.99, 'PERCENTAGE', NULL, NULL),
+    ('72233', 'NS 2200', 'Roco', 'NS 2200 Geel/Grijs DC', FALSE, 219.99, 40.00, 307.99, 'PERCENTAGE', NULL, NULL),
+    ('73456', 'BR 218', 'Märklin', 'DB BR 218 Rot AC Sound', FALSE, 329.99, 35.00, 445.49, 'PERCENTAGE', NULL, NULL),
+    ('74123', 'SNCF CC 40100', 'Roco', 'SNCF CC 40100 DC Sound', FALSE, 459.99, 50.00, 689.99, 'PERCENTAGE', NULL, NULL),
+    ('71999', 'NS ICM', 'Piko', 'NS ICM-III Geel/Blauw DC', FALSE, 289.99, 45.00, 420.49, 'PERCENTAGE', NULL, NULL),
+    ('76543', 'SBB Re 4/4 II', 'Märklin', 'SBB Re 4/4 II AC Sound', FALSE, 369.99, 40.00, 517.99, 'PERCENTAGE', NULL, NULL),
+    ('75321', 'ÖBB 1216', 'Roco', 'ÖBB 1216 Railjet DC', FALSE, 279.99, 35.00, 377.99, 'PERCENTAGE', NULL, NULL),
+    ('77777', 'BR 101', 'Märklin', 'DB BR 101 AC Sound', FALSE, 419.99, 45.00, 609.49, 'PERCENTAGE', NULL, NULL),
+    ('73916', 'BR 193 Vectron DB AG', 'Roco', 'DB BR 193 Electric Locomotive Era VI', FALSE, 259.99, 40.00, 363.99, 'PERCENTAGE', NULL, NULL),
+    ('71400', 'ICE 4 Basisset', 'PIKO', 'DB AG ICE 4 7-delig treinstel', FALSE, 399.99, 50.00, 449.99, 'EURO', NULL, NULL),
+    ('88487', 'Mini-Club BR 101', 'Märklin', 'Z-schaal elektrische locomotief', FALSE, 189.99, 30.00, 246.99, 'PERCENTAGE', NULL, NULL),
+    ('99999', 'Catalogus 2024', 'Märklin', 'Märklin volledige catalogus 2024', TRUE, 0.00, 0.00, 0.00, 'PERCENTAGE', NULL, NULL),
+    ('36435', 'DB BR 243', 'Märklin', 'H0 E-Lok BR 243 DR Ep.IV', FALSE, 329.99, 45.00, 478.49, 'PERCENTAGE', NULL, NULL),
+    ('73127', 'NS 1600', 'Roco', 'Elektrische locomotief NS 1600', FALSE, 249.99, 40.00, 289.99, 'EURO', NULL, NULL),
+    ('58469', 'PIKO BR 112', 'PIKO', 'BR 112 DB AG Ep.VI', FALSE, 189.99, 35.00, 256.49, 'PERCENTAGE', NULL, NULL),
+    ('73141-2', 'BR 01.10 Schnellzug-Dampflok', 'Roco', 'DB BR 01.10 mit Ölfeuerung Sound', FALSE, 449.99, 50.00, 674.99, 'PERCENTAGE', NULL, NULL),
+    ('43279-2', 'ICE 4 Basisset', 'Märklin', 'DB ICE 4 Basisgarnitur 7-teilig', FALSE, 599.99, 45.00, 869.99, 'PERCENTAGE', NULL, NULL);
 
--- ArtikelInVoorraad
-('73916', 'VOORRAAD', 'BR 193 Vectron DB AG', 'Roco', 'DB BR 193 Electric Locomotive Era VI', FALSE, 259.99, 40.00, 363.99, 'PERCENTAGE', 10, '2025-08-21', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('71400', 'VOORRAAD', 'ICE 4 Basisset', 'PIKO', 'DB AG ICE 4 7-delig treinstel', FALSE, 399.99, 50.00, 449.99, 'EURO', 5, '2025-08-21', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('88487', 'VOORRAAD', 'Mini-Club BR 101', 'Märklin', 'Z-schaal elektrische locomotief', FALSE, 189.99, 30.00, 246.99, 'PERCENTAGE', 15, '2025-08-21', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('99999', 'VOORRAAD', 'Catalogus 2024', 'Märklin', 'Märklin volledige catalogus 2024', TRUE, 0.00, 0.00, 0.00, 'PERCENTAGE', 100, '2025-08-21', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+-- Insert data into subclass tables
+INSERT INTO `artikel_in_voorraad` (`artikelnummer`, `voorraad`, `laatste_aankoopdatum`)
+VALUES
+    ('73916', 10, '2025-08-21'),
+    ('71400', 5, '2025-08-21'),
+    ('88487', 15, '2025-08-21'),
+    ('99999', 100, '2025-08-21'),
+    ('73127', 2, '2025-08-21');
 
--- ArtikelInBackorder
-('36435', 'BACKORDER', 'DB BR 243', 'Märklin', 'H0 E-Lok BR 243 DR Ep.IV', FALSE, 329.99, 45.00, 478.49, 'PERCENTAGE', 0, '2025-08-21', 5, 15, 2, '2025-08-21', 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('73127', 'BACKORDER', 'NS 1600', 'Roco', 'Elektrische locomotief NS 1600', FALSE, 249.99, 40.00, 289.99, 'EURO', 2, '2025-08-21', 3, 10, 1, '2025-08-21', 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('58469', 'BACKORDER', 'PIKO BR 112', 'PIKO', 'BR 112 DB AG Ep.VI', FALSE, 189.99, 35.00, 256.49, 'PERCENTAGE', 1, '2025-08-21', 5, 12, 2, '2025-08-21', 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+INSERT INTO `courant_artikel` (`artikelnummer`, `minimale_voorraad`, `normale_voorraad`, `minimale_bestelhoeveelheid`)
+VALUES
+    ('73141', 10, 25, 5),
+    ('43279', 12, 30, 6),
+    ('72120', 8, 20, 4),
+    ('78755', 5, 15, 5),
+    ('71403', 10, 20, 5),
+    ('73801', 10, 25, 5),
+    ('58672', 15, 35, 10),
+    ('73901', 8, 20, 4),
+    ('72233', 5, 15, 5),
+    ('73456', 10, 25, 5),
+    ('74123', 5, 15, 5),
+    ('71999', 15, 30, 8),
+    ('76543', 10, 25, 5),
+    ('75321', 10, 20, 5),
+    ('77777', 15, 35, 10),
+    ('36435', 5, 15, 2),
+    ('58469', 5, 12, 2);
 
--- ArtikelInVoorbestelling
-('73141-2', 'VOORBESTELLING', 'BR 01.10 Schnellzug-Dampflok', 'Roco', 'DB BR 01.10 mit Ölfeuerung Sound', FALSE, 449.99, 50.00, 674.99, 'PERCENTAGE', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 599.99, '2024-06-30', '2024-Q3', 100.00, FALSE, 0, NULL),
-('43279-2', 'VOORBESTELLING', 'ICE 4 Basisset', 'Märklin', 'DB ICE 4 Basisgarnitur 7-teilig', FALSE, 599.99, 45.00, 869.99, 'PERCENTAGE', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 799.99, '2024-05-31', '2024-Q2', 150.00, FALSE, 0, NULL);
+INSERT INTO `artikel_in_backorder` (`artikelnummer`, `besteldatum`, `next_backorder_id`)
+VALUES
+    ('36435', '2025-08-21', 3),
+    ('73127', '2025-08-21', 2),
+    ('58469', '2025-08-21', 2);
+
+INSERT INTO `artikel_in_voorbestelling` (`artikelnummer`, `voorbestellings_prijs`, `voorbestelling_tot_datum`, `leverings_kwartaal`, `voorschot`, `zonder_leveringstijd`, `aantal_in_voorbestelling`, `maximaal_aantal_voorbestellingen`)
+VALUES
+    ('73141-2', 599.99, '2024-06-30', '2024-Q3', 100.00, FALSE, 0, NULL),
+    ('43279-2', 799.99, '2024-05-31', '2024-Q2', 150.00, FALSE, 0, NULL);
 
 -- Insert data into `artikel_afbeeldingen` table
 INSERT INTO `artikel_afbeeldingen` (`artikelnummer`, `afbeelding_url`)
@@ -121,10 +175,10 @@ VALUES
     ('43279-2', '43279.jpg');
 
 -- Insert data into `backorder_lijn` table
-INSERT INTO `backorder_lijn` (`aantal`, `verwachte_datum`, `artikel_artikelnummer`, `backorder_id`)
+INSERT INTO `backorder_lijn` (`id`, `aantal`, `verwachte_datum`, `artikel_artikelnummer`, `backorder_id`)
 VALUES
-    (10, '2024-06-30', '36435', 1),
-    (5, '2024-05-15', '73127', 1),
-    (8, '2024-07-31', '58469', 1),
-    (5, '2024-06-01', '36435', 2),
-    (10, '2024-07-15', '36435', 3);
+    (1, 10, '2024-06-30', '36435', 1),
+    (2, 5, '2024-05-15', '73127', 1),
+    (3, 8, '2024-07-31', '58469', 1),
+    (4, 5, '2024-06-01', '36435', 2),
+    (5, 10, '2024-07-15', '36435', 3);

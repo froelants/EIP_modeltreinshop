@@ -13,4 +13,6 @@ import java.math.BigDecimal;
 public interface WinstmargeStrategy {
     BigDecimal berekenVerkoopprijs(BigDecimal aankoopprijs,
                                    BigDecimal marge);
+
+    WinstmargeType getType();
 }

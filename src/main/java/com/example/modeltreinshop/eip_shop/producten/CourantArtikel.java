@@ -1,24 +1,25 @@
 package com.example.modeltreinshop.eip_shop.producten;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.ArrayList;
 
-/*
- 2025/05/27 11:15
- */
-public class CourantArtikel
-        extends ArtikelInVoorraad {
-    /* CourantArtikel Class
-     * Business Logic:
-     * - Represents regularly stocked articles
-     * - Extends Artikel with standard pricing
-     * - Uses normal profit margin calculation
-     * - Regular stock management applies
-     * - Standard pricing rules apply
-     */
+@Entity
+@Table(name = "courant_artikel")
+@PrimaryKeyJoinColumn(name = "artikelnummer")
+public class CourantArtikel extends ArtikelInVoorraad {
+
+    @Column
+    @Positive(message = "Minimale voorraad moet positief zijn")
     private int minimaleVoorraad;
+
+    @Column
+    @Positive(message = "Normale voorraad moet groter zijn dan minimale voorraad")
     private int normaleVoorraad;
+
+    @Column
+    @Positive(message = "Minimale bestelhoeveelheid moet positief zijn")
     private int minimaleBestelhoeveelheid;
 
     public CourantArtikel(String artikelnummer,
@@ -35,23 +36,18 @@ public class CourantArtikel
                           int minimaleVoorraad,
                           int normaleVoorraad,
                           int minimaleBestelhoeveelheid) {
-        super(artikelnummer,
-              naam,
-              merk,
-              omschrijving,
-              gratisArtikel,
-              aankoopprijs,
-              winstmarge,
-              winstmargeType,
-              verkoopprijs,
-              afbeeldingen,
-              voorraad);
-        if (minimaleVoorraad <= 0 || normaleVoorraad <= minimaleVoorraad || minimaleBestelhoeveelheid <= 0) {
-            throw new IllegalArgumentException("Ongeldige voorraadparameters");
-        }
+        super(artikelnummer, naam, merk, omschrijving, gratisArtikel,
+              aankoopprijs, winstmarge, winstmargeType, verkoopprijs,
+              afbeeldingen, voorraad);
+
         this.minimaleVoorraad = minimaleVoorraad;
         this.normaleVoorraad = normaleVoorraad;
         this.minimaleBestelhoeveelheid = minimaleBestelhoeveelheid;
+    }
+
+    // No-arg constructor for JPA
+    public CourantArtikel() {
+        super();
     }
 
     public boolean moetBijbesteld() {
@@ -72,47 +68,5 @@ public class CourantArtikel
 
     public int getMinimaleBestelhoeveelheid() {
         return minimaleBestelhoeveelheid;
-    }
-
-    private void valideerVoorraadParameters(int minimaleVoorraad,
-                                            int normaleVoorraad,
-                                            int minimaleBestelhoeveelheid) {
-        List<String> errors = new ArrayList<>();
-
-        if (minimaleVoorraad <= 0) {
-            errors.add("Minimale voorraad moet positief zijn");
-        }
-        if (normaleVoorraad <= minimaleVoorraad) {
-            errors.add("Normale voorraad moet groter zijn dan minimale voorraad");
-        }
-        if (minimaleBestelhoeveelheid <= 0) {
-            errors.add("Minimale bestelhoeveelheid moet positief zijn");
-        }
-
-        if (!errors.isEmpty()) {
-            throw new IllegalArgumentException(String.join(" en ",
-                                                           errors));
-        }
-    }
-
-    public void setMinimaleVoorraad(int minimaleVoorraad) {
-        valideerVoorraadParameters(minimaleVoorraad,
-                                   this.normaleVoorraad,
-                                   this.minimaleBestelhoeveelheid);
-        this.minimaleVoorraad = minimaleVoorraad;
-    }
-
-    public void setNormaleVoorraad(int normaleVoorraad) {
-        valideerVoorraadParameters(this.minimaleVoorraad,
-                                   normaleVoorraad,
-                                   this.minimaleBestelhoeveelheid);
-        this.normaleVoorraad = normaleVoorraad;
-    }
-
-    public void setMinimaleBestelhoeveelheid(int minimaleBestelhoeveelheid) {
-        valideerVoorraadParameters(this.minimaleVoorraad,
-                                   this.normaleVoorraad,
-                                   minimaleBestelhoeveelheid);
-        this.minimaleBestelhoeveelheid = minimaleBestelhoeveelheid;
     }
 }

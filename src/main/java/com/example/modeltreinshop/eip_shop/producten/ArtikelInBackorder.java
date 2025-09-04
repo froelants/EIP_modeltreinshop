@@ -1,26 +1,28 @@
 package com.example.modeltreinshop.eip_shop.producten;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
 
+@Entity
+@Table(name = "artikel_in_backorder")
+@PrimaryKeyJoinColumn(name = "artikelnummer")
 public class ArtikelInBackorder extends CourantArtikel {
-    /* ArtikelInBackorder Class
-     * Business Logic:
-     * - Represents articles that are temporarily out of stock
-     * - Maintains list of BackorderLijn entries
-     * - Each BackorderLijn contains:
-     *   - Expected delivery date
-     *   - Number of items expected
-     * - Total backorder amount is sum of all BackorderLijn amounts
-     * - Can add new backorder lines with validation
-     * - Tracks when items will be back in stock
-     */
-    private final LocalDate besteldatum;
-    private final Map<Integer, BackorderLijn> backorders;
+
+    @Column
+    @NotNull(message = "Besteldatum mag niet null zijn")
+    private LocalDate besteldatum;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @MapKeyColumn(name = "backorder_id")
+    private Map<Integer, BackorderLijn> backorders;
+
+    @Column
     private int nextBackorderId;
 
     public ArtikelInBackorder(String artikelnummer,
@@ -43,23 +45,17 @@ public class ArtikelInBackorder extends CourantArtikel {
               afbeeldingen, voorraad, minimaleVoorraad, normaleVoorraad,
               minimaleBestelhoeveelheid);
 
-        if (besteldatum == null) {
-            throw new IllegalArgumentException("Besteldatum mag niet null zijn");
-        }
-
         this.besteldatum = besteldatum;
         this.backorders = new HashMap<>();
         this.nextBackorderId = 1;
     }
 
-    public int addBackorderLijn(LocalDate verwachteDatum, int aantal) {
-        if (aantal <= 0) {
-            throw new IllegalArgumentException("Aantal moet positief zijn");
-        }
-        if (verwachteDatum == null || verwachteDatum.isBefore(besteldatum)) {
-            throw new IllegalArgumentException("Verwachte datum moet na besteldatum liggen");
-        }
+    // No-arg constructor for JPA
+    public ArtikelInBackorder() {
+        super();
+    }
 
+    public int addBackorderLijn(LocalDate verwachteDatum, int aantal) {
         int backorderId = nextBackorderId++;
         backorders.put(backorderId, new BackorderLijn(verwachteDatum, aantal));
         return backorderId;

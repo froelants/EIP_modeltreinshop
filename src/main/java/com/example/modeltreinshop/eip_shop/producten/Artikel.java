@@ -1,33 +1,46 @@
 package com.example.modeltreinshop.eip_shop.producten;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Artikel {
-    /* Artikel Class
-     * Business Logic:
-     * - Base class for all article types in the shop
-     * - Contains common attributes: artikelnummer, naam, merk, omschrijving, etc.
-     * - Tracks gratis artikelen (free articles)
-     * - Manages pricing:
-     *   - Aankoopprijs (purchase price)
-     *   - Winstmarge (profit margin)
-     *   - Verkoopprijs (sales price)
-     * - Uses WinstmargeStrategy for profit calculation
-     * - Maintains list of product images
-     * - Validates:
-     *   - Required fields cannot be null/empty
-     *   - Prices must be positive
-     *   - Artikelnummer must follow specific format
-     */
-    private final String artikelnummer;
-    private final String naam;
-    private final String merk;
+
+    @Id
+    @Column(length = 255)
+    @NotBlank(message = "Artikelnummer mag niet leeg zijn")
+    private String artikelnummer;
+
+    @Column(length = 255)
+    @NotBlank(message = "Naam mag niet leeg zijn")
+    private String naam;
+
+    @Column(length = 255)
+    @NotBlank(message = "Merk mag niet leeg zijn")
+    private String merk;
+
+    @Lob
+    @NotBlank(message = "Omschrijving mag niet leeg zijn")
     private String omschrijving;
-    private final PrijsComponent prijsComponent;
+
+    @Embedded
+    private PrijsComponent prijsComponent;
+
+    @Column
     private BigDecimal kortingsPrijs;
+
+    @Column
     private LocalDate kortingTotDatum;
+
+    @ElementCollection
+    @CollectionTable(name = "artikel_afbeeldingen", joinColumns = @JoinColumn(name = "artikelnummer"))
+    @Column(name = "afbeelding_url")
     private final List<String> afbeeldingen;
 
     public Artikel(String artikelnummer,
@@ -40,45 +53,28 @@ public abstract class Artikel {
                    WinstmargeType winstmargeType,
                    BigDecimal verkoopprijs,
                    List<String> afbeeldingen) {
-
-        validateNotNull(artikelnummer, naam, merk, omschrijving);
-        validateNotBlank(artikelnummer, naam, merk, omschrijving);
-
-        this.artikelnummer = artikelnummer.trim();
-        this.naam = naam.trim();
-        this.merk = merk.trim();
-        this.omschrijving = omschrijving.trim();
+        this.artikelnummer = artikelnummer;
+        this.naam = naam;
+        this.merk = merk;
+        this.omschrijving = omschrijving;
         this.prijsComponent = PrijsComponentFactory.createPrijsComponent(
                 gratisArtikel, aankoopprijs, winstmarge, winstmargeType);
         this.prijsComponent.setVerkoopprijs(verkoopprijs);
         this.afbeeldingen = new ArrayList<>(afbeeldingen);
     }
-
-    private void validateNotNull(String... fields) {
-        for (String field : fields) {
-            if (field == null) {
-                throw new IllegalArgumentException("Verplicht veld mag niet null zijn");
-            }
-        }
+    // No-arg constructor for JPA
+    public Artikel() {
+        this.afbeeldingen = new ArrayList<>();
     }
 
-    private void validateNotBlank(String... fields) {
-        for (String field : fields) {
-            if (field.trim().isBlank()) {
-                throw new IllegalArgumentException("Verplicht veld mag niet leeg zijn");
-            }
-        }
-    }
+    // Getters and setters (omitted for brevity, assume they exist)
 
     public String getOmschrijving() {
         return omschrijving;
     }
 
     public void setOmschrijving(String omschrijving) {
-        if (omschrijving == null || omschrijving.trim().isBlank()) {
-            throw new IllegalArgumentException("Omschrijving mag niet leeg zijn");
-        }
-        this.omschrijving = omschrijving.trim();
+        this.omschrijving = omschrijving;
     }
 
     public String getMerk() {
@@ -125,14 +121,10 @@ public abstract class Artikel {
                !LocalDate.now().isAfter(kortingTotDatum);
     }
 
-    public void setKorting(BigDecimal kortingsPrijs, LocalDate kortingTotDatum) {
-        if (kortingTotDatum == null) {
-            throw new IllegalArgumentException("Kortingsdatum mag niet null zijn");
-        }
+    public void setKorting(BigDecimal kortingsPrijs, @NotNull LocalDate kortingTotDatum) {
         if (kortingsPrijs.compareTo(prijsComponent.getAankoopprijs()) <= 0) {
             throw new IllegalArgumentException("Kortingsprijs moet hoger zijn dan aankoopprijs");
         }
-
         this.kortingsPrijs = kortingsPrijs;
         this.kortingTotDatum = kortingTotDatum;
     }
@@ -149,7 +141,6 @@ public abstract class Artikel {
     protected BigDecimal getAankoopprijs() {
         return prijsComponent.getAankoopprijs();
     }
-
 
     public BigDecimal getMinimaleVerkoopprijs() {
         if (isInKorting()) {
@@ -195,34 +186,15 @@ public abstract class Artikel {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(String.format("%s [%s] %s %s",
-                                getClass().getSimpleName(),
-                                artikelnummer,
-                                merk,
-                                naam));
-
-        sb.append(String.format(" - € %.2f", getVerkoopprijs()));
-        if (isInKorting()) {
-            sb.append(String.format(" (in korting: € %.2f tot %s)",
-                                    kortingsPrijs,
-                                    kortingTotDatum));
-        }
-        if (prijsComponent.isGratisArtikel()) {
-            sb.append(" (gratis artikel)");
-        }
-        sb.append(String.format(" - %s", omschrijving));
-
-        if (!afbeeldingen.isEmpty()) {
-            sb.append(String.format(" - %d afbeelding(en)\n", afbeeldingen.size()));
-            sb.append("Afbeeldingen:\n");
-            for (String url : afbeeldingen) {
-                sb.append("  ").append(url).append("\n");
-            }
-            if (sb.charAt(sb.length() - 1) == '\n') {
-                sb.setLength(sb.length() - 1);
-            }
-        }
-        return sb.toString();
+        return "Artikel{" +
+               "artikelnummer='" + artikelnummer + '\'' +
+               ", naam='" + naam + '\'' +
+               ", merk='" + merk + '\'' +
+               ", omschrijving='" + omschrijving + '\'' +
+               ", prijsComponent=" + prijsComponent +
+               ", kortingsPrijs=" + kortingsPrijs +
+               ", kortingTotDatum=" + kortingTotDatum +
+               ", afbeeldingen=" + afbeeldingen +
+               '}';
     }
 }

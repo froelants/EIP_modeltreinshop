@@ -23,4 +23,5 @@ public enum WinstmargeType {
     public WinstmargeStrategy getStrategy() {
         return strategy;
     }
+
 }

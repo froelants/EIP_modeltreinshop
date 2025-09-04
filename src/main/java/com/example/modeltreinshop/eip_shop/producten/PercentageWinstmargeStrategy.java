@@ -19,4 +19,8 @@ public class PercentageWinstmargeStrategy implements WinstmargeStrategy {
         return aankoopprijs.multiply(BigDecimal.ONE.add(percentage.divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)))
                 .setScale(2, RoundingMode.HALF_UP);
     }
+    @Override
+    public WinstmargeType getType() {
+        return WinstmargeType.PERCENTAGE;
+    }
 }

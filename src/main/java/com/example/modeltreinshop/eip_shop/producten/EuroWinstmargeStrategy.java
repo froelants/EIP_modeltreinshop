@@ -17,4 +17,8 @@ public class EuroWinstmargeStrategy implements WinstmargeStrategy {
                                           BigDecimal marge) {
         return aankoopprijs.add(marge).setScale(2, RoundingMode.HALF_UP);
     }
+    @Override
+    public WinstmargeType getType() {
+        return WinstmargeType.EURO;
+    }
 }
