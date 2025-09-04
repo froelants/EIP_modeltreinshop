@@ -4,6 +4,7 @@ DROP DATABASE IF EXISTS `modeltreinshop`;
 CREATE DATABASE `modeltreinshop`;
 USE `modeltreinshop`;
 
+-- CREATE TABLES ZONDER KEYS EN CONSTRAINTS
 -- Create superclass table
 CREATE TABLE `artikel` (
                            `artikelnummer` VARCHAR(255) NOT NULL,
@@ -16,34 +17,27 @@ CREATE TABLE `artikel` (
                            `is_gratis_artikel` BIT(1),
                            `minimale_winstmarge` DECIMAL(19, 2) NOT NULL,
                            `verkoopprijs` DECIMAL(19, 2) NOT NULL,
-                           `winstmarge_type` VARCHAR(255) NOT NULL,
-                           PRIMARY KEY (`artikelnummer`)
+                           `winstmarge_type` VARCHAR(255) NOT NULL
 );
 
--- Create subclass tables, referencing the superclass
+-- Create subclass tables
 CREATE TABLE `artikel_in_voorraad` (
                                        `artikelnummer` VARCHAR(255) NOT NULL,
                                        `voorraad` INT,
-                                       `laatste_aankoopdatum` DATE,
-                                       PRIMARY KEY (`artikelnummer`),
-                                       FOREIGN KEY (`artikelnummer`) REFERENCES `artikel`(`artikelnummer`)
+                                       `laatste_aankoopdatum` DATE
 );
 
 CREATE TABLE `courant_artikel` (
                                    `artikelnummer` VARCHAR(255) NOT NULL,
                                    `minimale_voorraad` INT,
                                    `normale_voorraad` INT,
-                                   `minimale_bestelhoeveelheid` INT,
-                                   PRIMARY KEY (`artikelnummer`),
-                                   FOREIGN KEY (`artikelnummer`) REFERENCES `artikel_in_voorraad`(`artikelnummer`)
+                                   `minimale_bestelhoeveelheid` INT
 );
 
 CREATE TABLE `artikel_in_backorder` (
                                         `artikelnummer` VARCHAR(255) NOT NULL,
                                         `besteldatum` DATE,
-                                        `next_backorder_id` INT,
-                                        PRIMARY KEY (`artikelnummer`),
-                                        FOREIGN KEY (`artikelnummer`) REFERENCES `courant_artikel`(`artikelnummer`)
+                                        `next_backorder_id` INT
 );
 
 CREATE TABLE `artikel_in_voorbestelling` (
@@ -54,9 +48,7 @@ CREATE TABLE `artikel_in_voorbestelling` (
                                              `voorschot` DECIMAL(19, 2),
                                              `zonder_leveringstijd` BIT(1),
                                              `aantal_in_voorbestelling` INT,
-                                             `maximaal_aantal_voorbestellingen` INT,
-                                             PRIMARY KEY (`artikelnummer`),
-                                             FOREIGN KEY (`artikelnummer`) REFERENCES `artikel`(`artikelnummer`)
+                                             `maximaal_aantal_voorbestellingen` INT
 );
 
 -- Auxiliary tables
@@ -66,19 +58,16 @@ CREATE TABLE `artikel_afbeeldingen` (
 );
 
 CREATE TABLE `backorder_lijn` (
-                                  `id` BIGINT NOT NULL AUTO_INCREMENT,
+                                  `id` BIGINT NOT NULL,
                                   `aantal` INT NOT NULL,
                                   `verwachte_datum` DATE NOT NULL,
                                   `artikel_artikelnummer` VARCHAR(255) NOT NULL,
-                                  `backorder_id` INT NOT NULL,
-                                  PRIMARY KEY (`id`)
+                                  `backorder_id` INT NOT NULL
 );
 
--- Foreign keys
-ALTER TABLE `artikel_afbeeldingen` ADD CONSTRAINT `FK_artikel_afbeeldingen_artikel` FOREIGN KEY (`artikelnummer`) REFERENCES `artikel`(`artikelnummer`);
-ALTER TABLE `backorder_lijn` ADD CONSTRAINT `FK_backorder_lijn_artikel` FOREIGN KEY (`artikel_artikelnummer`) REFERENCES `artikel`(`artikelnummer`);
 
--- Insert data into `artikel` table
+-- INSERT DATA
+-- Stap 1: Voeg alle artikelen toe aan de supertabel `artikel`
 INSERT INTO `artikel` (`artikelnummer`, `naam`, `merk`, `omschrijving`, `is_gratis_artikel`, `aankoopprijs`, `minimale_winstmarge`, `verkoopprijs`, `winstmarge_type`, `kortings_prijs`, `korting_tot_datum`)
 VALUES
     ('73141', 'BR 01.10 Dampflok', 'Roco', 'DB BR 01.10 Sound', FALSE, 449.99, 50.00, 674.99, 'PERCENTAGE', NULL, NULL),
@@ -106,15 +95,33 @@ VALUES
     ('73141-2', 'BR 01.10 Schnellzug-Dampflok', 'Roco', 'DB BR 01.10 mit Ölfeuerung Sound', FALSE, 449.99, 50.00, 674.99, 'PERCENTAGE', NULL, NULL),
     ('43279-2', 'ICE 4 Basisset', 'Märklin', 'DB ICE 4 Basisgarnitur 7-teilig', FALSE, 599.99, 45.00, 869.99, 'PERCENTAGE', NULL, NULL);
 
--- Insert data into subclass tables
+-- Stap 2: Voeg alle artikelen die een voorraad hebben in de `artikel_in_voorraad` tabel
 INSERT INTO `artikel_in_voorraad` (`artikelnummer`, `voorraad`, `laatste_aankoopdatum`)
 VALUES
+    ('73141', 8, '2025-08-21'),
+    ('43279', 15, '2025-08-21'),
+    ('72120', 5, '2025-08-21'),
+    ('78755', 3, '2025-08-21'),
+    ('71403', 12, '2025-08-21'),
+    ('73801', 7, '2025-08-21'),
+    ('58672', 20, '2025-08-21'),
+    ('73901', 4, '2025-08-21'),
+    ('72233', 6, '2025-08-21'),
+    ('73456', 9, '2025-08-21'),
+    ('74123', 2, '2025-08-21'),
+    ('71999', 18, '2025-08-21'),
+    ('76543', 11, '2025-08-21'),
+    ('75321', 13, '2025-08-21'),
+    ('77777', 16, '2025-08-21'),
     ('73916', 10, '2025-08-21'),
     ('71400', 5, '2025-08-21'),
     ('88487', 15, '2025-08-21'),
     ('99999', 100, '2025-08-21'),
-    ('73127', 2, '2025-08-21');
+    ('36435', 0, '2025-08-21'),
+    ('73127', 2, '2025-08-21'),
+    ('58469', 1, '2025-08-21');
 
+-- Stap 3: Voeg nu de courante artikelen toe aan hun eigen tabel
 INSERT INTO `courant_artikel` (`artikelnummer`, `minimale_voorraad`, `normale_voorraad`, `minimale_bestelhoeveelheid`)
 VALUES
     ('73141', 10, 25, 5),
@@ -133,20 +140,23 @@ VALUES
     ('75321', 10, 20, 5),
     ('77777', 15, 35, 10),
     ('36435', 5, 15, 2),
+    ('73127', 3, 10, 1),
     ('58469', 5, 12, 2);
 
+-- Stap 4: Voeg backorder artikelen toe aan hun eigen tabel
 INSERT INTO `artikel_in_backorder` (`artikelnummer`, `besteldatum`, `next_backorder_id`)
 VALUES
     ('36435', '2025-08-21', 3),
     ('73127', '2025-08-21', 2),
     ('58469', '2025-08-21', 2);
 
+-- Stap 5: Voeg voorbestellingsartikelen toe aan hun eigen tabel
 INSERT INTO `artikel_in_voorbestelling` (`artikelnummer`, `voorbestellings_prijs`, `voorbestelling_tot_datum`, `leverings_kwartaal`, `voorschot`, `zonder_leveringstijd`, `aantal_in_voorbestelling`, `maximaal_aantal_voorbestellingen`)
 VALUES
     ('73141-2', 599.99, '2024-06-30', '2024-Q3', 100.00, FALSE, 0, NULL),
     ('43279-2', 799.99, '2024-05-31', '2024-Q2', 150.00, FALSE, 0, NULL);
 
--- Insert data into `artikel_afbeeldingen` table
+-- Stap 6: Voeg de overige gerelateerde data toe aan de auxiliary tables
 INSERT INTO `artikel_afbeeldingen` (`artikelnummer`, `afbeelding_url`)
 VALUES
     ('73141', '73141-1.jpg'), ('73141', '73141-2.jpg'),
@@ -174,7 +184,6 @@ VALUES
     ('73141-2', '73141-1.jpg'), ('73141-2', '73141-2.jpg'),
     ('43279-2', '43279.jpg');
 
--- Insert data into `backorder_lijn` table
 INSERT INTO `backorder_lijn` (`id`, `aantal`, `verwachte_datum`, `artikel_artikelnummer`, `backorder_id`)
 VALUES
     (1, 10, '2024-06-30', '36435', 1),
@@ -182,3 +191,19 @@ VALUES
     (3, 8, '2024-07-31', '58469', 1),
     (4, 5, '2024-06-01', '36435', 2),
     (5, 10, '2024-07-15', '36435', 3);
+
+
+-- VOEG NU PAS DE KEYS EN CONSTRAINTS TOE
+ALTER TABLE `artikel` ADD PRIMARY KEY (`artikelnummer`);
+ALTER TABLE `artikel_in_voorraad` ADD PRIMARY KEY (`artikelnummer`);
+ALTER TABLE `courant_artikel` ADD PRIMARY KEY (`artikelnummer`);
+ALTER TABLE `artikel_in_backorder` ADD PRIMARY KEY (`artikelnummer`);
+ALTER TABLE `artikel_in_voorbestelling` ADD PRIMARY KEY (`artikelnummer`);
+ALTER TABLE `artikel_afbeeldingen` ADD FOREIGN KEY (`artikelnummer`) REFERENCES `artikel`(`artikelnummer`);
+ALTER TABLE `backorder_lijn` ADD PRIMARY KEY (`id`);
+ALTER TABLE `backorder_lijn` MODIFY `id` BIGINT NOT NULL AUTO_INCREMENT;
+ALTER TABLE `backorder_lijn` ADD FOREIGN KEY (`artikel_artikelnummer`) REFERENCES `artikel_in_backorder`(`artikelnummer`);
+ALTER TABLE `artikel_in_voorraad` ADD FOREIGN KEY (`artikelnummer`) REFERENCES `artikel`(`artikelnummer`);
+ALTER TABLE `courant_artikel` ADD FOREIGN KEY (`artikelnummer`) REFERENCES `artikel_in_voorraad`(`artikelnummer`);
+ALTER TABLE `artikel_in_backorder` ADD FOREIGN KEY (`artikelnummer`) REFERENCES `courant_artikel`(`artikelnummer`);
+ALTER TABLE `artikel_in_voorbestelling` ADD FOREIGN KEY (`artikelnummer`) REFERENCES `artikel`(`artikelnummer`);
